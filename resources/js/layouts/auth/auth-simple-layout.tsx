@@ -25,8 +25,8 @@ export default function AuthSimpleLayout({ children, title, description, variant
                             <Heart className="w-6 h-6 text-white" />
                         </div>
                         <div>
-                            <span className="text-xl font-bold text-slate-900 dark:text-white">Poliklinik</span>
-                            <span className={`text-xl font-bold ${isAdmin ? 'text-slate-600 dark:text-slate-400' : 'text-teal-600 dark:text-teal-400'}`}>Queue</span>
+                            <span className="text-xl font-bold text-slate-900 dark:text-white">Smart</span>
+                                <span className={`text-xl font-bold ${isAdmin ? 'text-slate-600 dark:text-slate-400' : 'text-teal-600 dark:text-teal-400'}`}>Loket</span>
                         </div>
                     </Link>
 
@@ -43,7 +43,7 @@ export default function AuthSimpleLayout({ children, title, description, variant
 
                     {/* Footer */}
                     <p className="mt-8 text-center text-xs text-slate-500 dark:text-slate-500">
-                        © {new Date().getFullYear()} Sistem Antrian Poliklinik
+                        © {new Date().getFullYear()} SmartLoket
                     </p>
                 </div>
             </div>
@@ -71,7 +71,7 @@ export default function AuthSimpleLayout({ children, title, description, variant
                     </h2>
                     <p className={`text-lg ${isAdmin ? 'text-slate-300' : 'text-teal-100'} leading-relaxed`}>
                         {isAdmin
-                            ? 'Akses dashboard admin untuk mengelola layanan, loket, dan sistem antrian poliklinik Anda.'
+                            ? 'Akses dashboard admin untuk mengelola layanan, loket, dan sistem antrian klinik Anda.'
                             : 'Sistem antrian digital modern untuk pengalaman pelayanan kesehatan yang lebih baik dan efisien.'
                         }
                     </p>

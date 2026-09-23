@@ -26,7 +26,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'email' => ['required_without:username', 'string'],
+            'username' => ['required_without:email', 'string'],
             'password' => ['required', 'string'],
         ];
     }
@@ -40,7 +41,15 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        // SmartLoket: login memakai username ATAU email (+ hanya akun aktif).
+        $credential = (string) ($this->string('username')->value() ?: $this->string('email')->value());
+        $fieldType = filter_var($credential, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        if (! Auth::attempt([
+            $fieldType => $credential,
+            'password' => $this->string('password')->value(),
+            'is_active' => true,
+        ], $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -79,7 +88,9 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return $this->string('email')
+        $credential = (string) ($this->string('username')->value() ?: $this->string('email')->value());
+
+        return str($credential)
             ->lower()
             ->append('|'.$this->ip())
             ->transliterate()

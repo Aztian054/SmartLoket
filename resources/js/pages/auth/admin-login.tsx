@@ -37,8 +37,8 @@ export default function AdminLogin({ status, canResetPassword }: AdminLoginProps
                                 <Heart className="w-6 h-6 text-white" />
                             </div>
                             <div>
-                                <span className="text-xl font-bold text-slate-900 dark:text-white">Poliklinik</span>
-                                <span className="text-xl font-bold text-slate-600 dark:text-slate-400">Queue</span>
+                                <span className="text-xl font-bold text-slate-900 dark:text-white">Smart</span>
+                                <span className="text-xl font-bold text-slate-600 dark:text-slate-400">Loket</span>
                             </div>
                         </div>
 
@@ -88,7 +88,7 @@ export default function AdminLogin({ status, canResetPassword }: AdminLoginProps
                                                     autoFocus
                                                     tabIndex={1}
                                                     autoComplete="email"
-                                                    placeholder="admin@poliklinik.com"
+                                                    placeholder="admin / admin@smartloket.dev"
                                                     className="pl-10 h-12 rounded-xl border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
                                                 />
                                             </div>
@@ -165,7 +165,7 @@ export default function AdminLogin({ status, canResetPassword }: AdminLoginProps
 
                         {/* Footer */}
                         <p className="mt-8 text-center text-xs text-slate-500 dark:text-slate-500">
-                            © {new Date().getFullYear()} Sistem Antrian Poliklinik
+                            © {new Date().getFullYear()} SmartLoket
                         </p>
                     </div>
                 </div>
@@ -192,7 +192,7 @@ export default function AdminLogin({ status, canResetPassword }: AdminLoginProps
                             Kelola Antrian dengan Mudah
                         </h2>
                         <p className="text-lg text-slate-300 leading-relaxed">
-                            Akses dashboard admin untuk mengelola layanan, loket, dan sistem antrian poliklinik Anda.
+                            Akses dashboard admin untuk mengelola layanan, loket, dan sistem antrian klinik Anda.
                         </p>
 
                         {/* Feature Icons */}

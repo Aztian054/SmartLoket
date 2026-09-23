@@ -1,4 +1,4 @@
-import { dashboard, login, register } from '@/routes';
+import { dashboard, login } from '@/routes';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import {
@@ -73,7 +73,7 @@ export default function Welcome() {
 
     return (
         <>
-            <Head title="Sistem Antrian Poliklinik">
+            <Head title="SmartLoket">
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
             </Head>
@@ -89,7 +89,7 @@ export default function Welcome() {
                                     <Heart className="w-5 h-5 text-white" />
                                 </div>
                                 <div>
-                                    <span className="text-lg font-bold text-slate-900 dark:text-white">Sistem Antrian Poliklinik</span>
+                                    <span className="text-lg font-bold text-slate-900 dark:text-white">SmartLoket</span>
                                 </div>
                             </div>
 
@@ -119,10 +119,10 @@ export default function Welcome() {
                                             Masuk
                                         </Link>
                                         <Link
-                                            href={register()}
+                                            href="/tracking"
                                             className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-teal-500 to-emerald-600 text-white text-sm font-semibold rounded-xl hover:from-teal-600 hover:to-emerald-700 transition-all shadow-lg shadow-teal-500/25 hover:shadow-xl hover:shadow-teal-500/30 hover:-translate-y-0.5"
                                         >
-                                            Daftar
+                                            Lacak Berkas
                                             <ArrowRight className="w-4 h-4" />
                                         </Link>
                                     </>
@@ -153,7 +153,7 @@ export default function Welcome() {
                             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white leading-tight mb-6">
                                 Kelola Antrian{' '}
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-emerald-600">
-                                    Poliklinik
+                                    Klinik
                                 </span>
                                 <br />
                                 dengan Mudah & Efisien
@@ -267,7 +267,7 @@ export default function Welcome() {
                             Siap Memulai?
                         </h2>
                         <p className="text-xl text-teal-100 mb-10 max-w-2xl mx-auto">
-                            Bergabunglah dengan sistem antrian digital kami dan tingkatkan efisiensi pelayanan poliklinik Anda
+                            Bergabunglah dengan sistem antrian digital kami dan tingkatkan efisiensi pelayanan klinik Anda
                         </p>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                             <Link
@@ -279,10 +279,10 @@ export default function Welcome() {
                             </Link>
                             {!auth.user && (
                                 <Link
-                                    href={register()}
+                                    href="/tracking"
                                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-transparent text-white text-base font-semibold rounded-2xl border-2 border-white/30 hover:bg-white/10 transition-all"
                                 >
-                                    Daftar Akun
+                                    Lacak Berkas
                                     <ArrowRight className="w-5 h-5" />
                                 </Link>
                             )}
@@ -300,8 +300,8 @@ export default function Welcome() {
                                     <Heart className="w-5 h-5 text-white" />
                                 </div>
                                 <div>
-                                    <span className="text-lg font-bold text-white">Poliklinik</span>
-                                    <span className="text-lg font-bold text-teal-400">Queue</span>
+                                    <span className="text-lg font-bold text-white">Smart</span>
+                                    <span className="text-lg font-bold text-teal-400">Loket</span>
                                 </div>
                             </div>
 
@@ -314,7 +314,7 @@ export default function Welcome() {
 
                             {/* Copyright */}
                             <div className="text-sm">
-                                © {new Date().getFullYear()} Sistem Antrian Poliklinik. All rights reserved.
+                                © {new Date().getFullYear()} SmartLoket. All rights reserved.
                             </div>
                         </div>
                     </div>

@@ -189,7 +189,7 @@ export default function TicketPage() {
         <div class="ticket">
           <div class="header">
             <h1>TIKET ANTRIAN</h1>
-            <p>Sistem Antrian Poliklinik</p>
+            <p>SmartLoket</p>
           </div>
           <div class="content">
             <div class="service">${serviceName}</div>

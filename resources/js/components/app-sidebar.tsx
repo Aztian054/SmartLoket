@@ -15,6 +15,29 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
+        title: 'Modul Loket SmartLoket',
+        href: '/tracking',
+        icon: ListOrdered,
+        items: [
+            {
+                title: 'Tracking Publik',
+                href: '/tracking',
+            },
+            {
+                title: 'Database Tiket (Admin)',
+                href: '/admin',
+            },
+            {
+                title: 'Loket Penerimaan',
+                href: '/loket',
+            },
+            {
+                title: 'Laporan & Rekap',
+                href: '/reports',
+            },
+        ],
+    },
+    {
         title: 'Antrian',
         href: '/queue/display',
         icon: Ticket,

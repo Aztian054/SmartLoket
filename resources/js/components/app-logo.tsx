@@ -8,7 +8,7 @@ export default function AppLogo() {
             </div>
             <div className="ml-1 grid flex-1 text-left text-sm">
                 <span className="mb-0.5 truncate leading-none font-bold">
-                    <span className="text-sidebar-foreground">Sistem Antrian Poliklinik</span>
+                    <span className="text-sidebar-foreground">SmartLoket</span>
                 </span>
                 <span className="text-xs text-sidebar-foreground/60">Cepat, Efisien, dan Modern</span>
             </div>

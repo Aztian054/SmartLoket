@@ -1,8 +1,30 @@
-<?php
+﻿<?php
 
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AlihMediaBtelController;
+use App\Http\Controllers\AlihMediaSuelController;
 use App\Http\Controllers\DisplayController;
+use App\Http\Controllers\FormPendaftaranController;
+use App\Http\Controllers\LoketController;
+use App\Http\Controllers\PemimpinController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\TrackingController;
+use App\Http\Controllers\ValidatorBtelController;
+use App\Http\Controllers\ValidatorSuelController;
+use App\Http\Controllers\VerifikatorController;
+use App\Http\Controllers\WarkahController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes â€” SmartLoket
+|--------------------------------------------------------------------------
+| Modul antrian klinik (React/Inertia) + Modul loket pertanahan SmartLoket
+| (9 peran: admin, pemimpin, loket, verifikator, warkah, validator_btel,
+|  validator_suel, alih_media_btel, alih_media_suel).
+| Pola pull-based: Smart Search â†’ Add â†’ Proses â†’ Selesai â†’ Kembali ke DB Admin.
+*/
 
 Route::get('/', function () {
     return Inertia::render('welcome');
@@ -26,10 +48,175 @@ Route::get('/display', [DisplayController::class, 'index'])->name('display.index
 Route::get('/ticket', [DisplayController::class, 'ticket'])->name('display.ticket');
 Route::post('/ticket', [DisplayController::class, 'createTicket'])->name('display.create-ticket');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+// Public tracking (SmartLoket)
+Route::get('/tracking', [TrackingController::class, 'index'])->name('tracking.index');
+Route::get('/tracking/{kode}', [TrackingController::class, 'show'])->name('tracking.show')->where('kode', '.*');
+
+// Protected routes
+Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
+// â”€â”€ Admin: DB Tiket Terpadu, User, Arsip â”€â”€
+    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/', [AdminController::class, 'index'])->name('index');
+        Route::get('/selesai', [AdminController::class, 'selesai'])->name('selesai');
+        Route::post('/selesai/arsipkan-massal', [AdminController::class, 'arsipkanMassal'])->name('selesai.arsipkan-massal');
+        Route::get('/revisi', [AdminController::class, 'revisi'])->name('revisi');
+        Route::post('/revisi/{id}/hapus', [AdminController::class, 'revisiHapus'])->name('revisi.hapus');
+        Route::get('/tambah-tiket', [AdminController::class, 'createTiket'])->name('create_tiket');
+        Route::post('/tambah-tiket', [AdminController::class, 'storeTiket'])->name('store_tiket');
+        Route::get('/tiket/{id}', [AdminController::class, 'show'])->name('show');
+        Route::post('/tiket/{id}/arsipkan', [AdminController::class, 'arsipkan'])->name('arsipkan');
+        Route::get('/arsip', [AdminController::class, 'arsipIndex'])->name('arsip');
+        Route::post('/arsip', [AdminController::class, 'arsipStore'])->name('arsip.store');
+        Route::get('/users', [AdminController::class, 'users'])->name('users');
+        Route::post('/users', [AdminController::class, 'usersStore'])->name('users.store');
+        Route::post('/users/{id}/toggle', [AdminController::class, 'usersToggle'])->name('users.toggle');
+        Route::get('/users/{id}/edit', [AdminController::class, 'usersEdit'])->name('users.edit');
+        Route::put('/users/{id}', [AdminController::class, 'usersUpdate'])->name('users.update');
+        Route::post('/users/{id}/hapus', [AdminController::class, 'usersHapus'])->name('users.hapus');
+
+        // â”€â”€ Kelola Form Pendaftaran (master konten form) â”€â”€
+        Route::get('/form-pendaftaran', [FormPendaftaranController::class, 'index'])->name('form-pendaftaran');
+
+        // Jenis Permohonan
+        Route::post('/form-pendaftaran/jenis-permohonan', [FormPendaftaranController::class, 'jenisPermohonanStore'])->name('form-pendaftaran.jenis-permohonan.store');
+        Route::get('/form-pendaftaran/jenis-permohonan/{id}/edit', [FormPendaftaranController::class, 'jenisPermohonanEdit'])->name('form-pendaftaran.jenis-permohonan.edit');
+        Route::put('/form-pendaftaran/jenis-permohonan/{id}', [FormPendaftaranController::class, 'jenisPermohonanUpdate'])->name('form-pendaftaran.jenis-permohonan.update');
+        Route::post('/form-pendaftaran/jenis-permohonan/{id}/toggle', [FormPendaftaranController::class, 'jenisPermohonanToggle'])->name('form-pendaftaran.jenis-permohonan.toggle');
+        Route::post('/form-pendaftaran/jenis-permohonan/{id}/hapus', [FormPendaftaranController::class, 'jenisPermohonanDestroy'])->name('form-pendaftaran.jenis-permohonan.hapus');
+
+        // Persyaratan Dokumen
+        Route::post('/form-pendaftaran/persyaratan', [FormPendaftaranController::class, 'persyaratanStore'])->name('form-pendaftaran.persyaratan.store');
+        Route::post('/form-pendaftaran/persyaratan/{id}/hapus', [FormPendaftaranController::class, 'persyaratanDestroy'])->name('form-pendaftaran.persyaratan.hapus');
+
+        // Saran Koreksi
+        Route::post('/form-pendaftaran/saran-koreksi', [FormPendaftaranController::class, 'saranKoreksiStore'])->name('form-pendaftaran.saran-koreksi.store');
+        Route::get('/form-pendaftaran/saran-koreksi/{id}/edit', [FormPendaftaranController::class, 'saranKoreksiEdit'])->name('form-pendaftaran.saran-koreksi.edit');
+        Route::put('/form-pendaftaran/saran-koreksi/{id}', [FormPendaftaranController::class, 'saranKoreksiUpdate'])->name('form-pendaftaran.saran-koreksi.update');
+        Route::post('/form-pendaftaran/saran-koreksi/{id}/hapus', [FormPendaftaranController::class, 'saranKoreksiDestroy'])->name('form-pendaftaran.saran-koreksi.hapus');
+
+        // __SMARTLOKET_ADMIN_PART2__
+// Jenis Hak
+        Route::post('/form-pendaftaran/jenis-hak', [FormPendaftaranController::class, 'jenisHakStore'])->name('form-pendaftaran.jenis-hak.store');
+        Route::get('/form-pendaftaran/jenis-hak/{id}/edit', [FormPendaftaranController::class, 'jenisHakEdit'])->name('form-pendaftaran.jenis-hak.edit');
+        Route::put('/form-pendaftaran/jenis-hak/{id}', [FormPendaftaranController::class, 'jenisHakUpdate'])->name('form-pendaftaran.jenis-hak.update');
+        Route::post('/form-pendaftaran/jenis-hak/{id}/toggle', [FormPendaftaranController::class, 'jenisHakToggle'])->name('form-pendaftaran.jenis-hak.toggle');
+        Route::post('/form-pendaftaran/jenis-hak/{id}/hapus', [FormPendaftaranController::class, 'jenisHakDestroy'])->name('form-pendaftaran.jenis-hak.hapus');
+
+        // Kategori Permohonan
+        Route::post('/form-pendaftaran/kategori', [FormPendaftaranController::class, 'kategoriStore'])->name('form-pendaftaran.kategori.store');
+        Route::get('/form-pendaftaran/kategori/{id}/edit', [FormPendaftaranController::class, 'kategoriEdit'])->name('form-pendaftaran.kategori.edit');
+        Route::put('/form-pendaftaran/kategori/{id}', [FormPendaftaranController::class, 'kategoriUpdate'])->name('form-pendaftaran.kategori.update');
+        Route::post('/form-pendaftaran/kategori/{id}/toggle', [FormPendaftaranController::class, 'kategoriToggle'])->name('form-pendaftaran.kategori.toggle');
+        Route::post('/form-pendaftaran/kategori/{id}/hapus', [FormPendaftaranController::class, 'kategoriDestroy'])->name('form-pendaftaran.kategori.hapus');
+    });
+
+    // â”€â”€ Pemimpin: Monitoring â”€â”€
+    Route::middleware(['role:pemimpin'])->prefix('pemimpin')->name('pemimpin.')->group(function () {
+        Route::get('/', [PemimpinController::class, 'index'])->name('index');
+        Route::get('/tiket/{id}', [PemimpinController::class, 'show'])->name('show');
+    });
+
+    // â”€â”€ Stage 1: Loket â”€â”€
+    Route::middleware(['role:loket'])->prefix('loket')->name('loket.')->group(function () {
+        Route::get('/', [LoketController::class, 'index'])->name('index');
+        Route::get('/create', [LoketController::class, 'create'])->name('create');
+        Route::post('/', [LoketController::class, 'store'])->name('store');
+        Route::get('/{id}', [LoketController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [LoketController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [LoketController::class, 'update'])->name('update');
+        Route::post('/{id}/resubmit', [LoketController::class, 'resubmit'])->name('resubmit');
+        Route::get('/{id}/print-receipt', [LoketController::class, 'printReceipt'])->name('printReceipt');
+        Route::get('/{id}/print-checklist', [LoketController::class, 'printChecklist'])->name('printChecklist');
+    });
+// â”€â”€ Stage 2: Verifikator â”€â”€
+    Route::middleware(['role:verifikator'])->prefix('verifikator')->name('verifikator.')->group(function () {
+        Route::get('/', [VerifikatorController::class, 'index'])->name('index');
+        Route::get('/search', [VerifikatorController::class, 'search'])->name('search');
+        Route::post('/add/{id}', [VerifikatorController::class, 'add'])->name('add');
+        Route::get('/{id}', [VerifikatorController::class, 'show'])->name('show');
+        Route::get('/{id}/print-perbaikan', [VerifikatorController::class, 'printPerbaikan'])->name('print-perbaikan');
+        Route::post('/{id}/simpan', [VerifikatorController::class, 'simpanHasil'])->name('simpan');
+        Route::post('/{id}/selesai', [VerifikatorController::class, 'selesai'])->name('selesai');
+        Route::post('/{id}/revisi', [VerifikatorController::class, 'revisi'])->name('revisi');
+        Route::post('/{id}/lepas', [VerifikatorController::class, 'lepas'])->name('lepas');
+    });
+
+    // â”€â”€ Stage 3: Warkah â”€â”€
+    Route::middleware(['role:warkah'])->prefix('warkah')->name('warkah.')->group(function () {
+        Route::get('/', [WarkahController::class, 'index'])->name('index');
+        Route::get('/search', [WarkahController::class, 'search'])->name('search');
+        Route::post('/add/{id}', [WarkahController::class, 'add'])->name('add');
+        Route::get('/{id}', [WarkahController::class, 'show'])->name('show');
+        Route::get('/{id}/print-perbaikan', [WarkahController::class, 'printPerbaikan'])->name('print-perbaikan');
+        Route::post('/{id}/simpan', [WarkahController::class, 'simpanProgres'])->name('simpan');
+        Route::post('/{id}/kirim', [WarkahController::class, 'kirim'])->name('kirim');
+        Route::post('/{id}/pengembalian', [WarkahController::class, 'catatPengembalian'])->name('pengembalian');
+        Route::post('/{id}/selesai', [WarkahController::class, 'selesai'])->name('selesai');
+        Route::post('/{id}/revisi', [WarkahController::class, 'revisi'])->name('revisi');
+        Route::post('/{id}/lepas', [WarkahController::class, 'lepas'])->name('lepas');
+    });
+// â”€â”€ Stage 4a: Validator BT â”€â”€
+    Route::middleware(['role:validator_btel'])->prefix('validator-bt')->name('validator_btel.')->group(function () {
+        Route::get('/', [ValidatorBtelController::class, 'index'])->name('index');
+        Route::get('/search', [ValidatorBtelController::class, 'search'])->name('search');
+        Route::post('/add/{id}', [ValidatorBtelController::class, 'add'])->name('add');
+        Route::get('/{id}', [ValidatorBtelController::class, 'show'])->name('show');
+        Route::get('/{id}/print-perbaikan', [ValidatorBtelController::class, 'printPerbaikan'])->name('print-perbaikan');
+        Route::post('/{id}/simpan', [ValidatorBtelController::class, 'simpanHasil'])->name('simpan');
+        Route::post('/{id}/selesai', [ValidatorBtelController::class, 'selesai'])->name('selesai');
+        Route::post('/{id}/revisi', [ValidatorBtelController::class, 'revisi'])->name('revisi');
+        Route::post('/{id}/lepas', [ValidatorBtelController::class, 'lepas'])->name('lepas');
+    });
+
+    // â”€â”€ Stage 4b: Validator SU â”€â”€
+    Route::middleware(['role:validator_suel'])->prefix('validator-su')->name('validator_suel.')->group(function () {
+        Route::get('/', [ValidatorSuelController::class, 'index'])->name('index');
+        Route::get('/search', [ValidatorSuelController::class, 'search'])->name('search');
+        Route::post('/add/{id}', [ValidatorSuelController::class, 'add'])->name('add');
+        Route::get('/{id}', [ValidatorSuelController::class, 'show'])->name('show');
+        Route::get('/{id}/print-perbaikan', [ValidatorSuelController::class, 'printPerbaikan'])->name('print-perbaikan');
+        Route::post('/{id}/simpan', [ValidatorSuelController::class, 'simpanHasil'])->name('simpan');
+        Route::post('/{id}/selesai', [ValidatorSuelController::class, 'selesai'])->name('selesai');
+        Route::post('/{id}/revisi', [ValidatorSuelController::class, 'revisi'])->name('revisi');
+        Route::post('/{id}/lepas', [ValidatorSuelController::class, 'lepas'])->name('lepas');
+    });
+// â”€â”€ Stage 5a: Alih Media BT â”€â”€
+    Route::middleware(['role:alih_media_btel'])->prefix('alih-media-bt')->name('alih_media_btel.')->group(function () {
+        Route::get('/', [AlihMediaBtelController::class, 'index'])->name('index');
+        Route::get('/search', [AlihMediaBtelController::class, 'search'])->name('search');
+        Route::post('/add/{id}', [AlihMediaBtelController::class, 'add'])->name('add');
+        Route::get('/{id}', [AlihMediaBtelController::class, 'show'])->name('show');
+        Route::get('/{id}/print-perbaikan', [AlihMediaBtelController::class, 'printPerbaikan'])->name('print-perbaikan');
+        Route::post('/{id}/simpan', [AlihMediaBtelController::class, 'simpanHasil'])->name('simpan');
+        Route::post('/{id}/selesai', [AlihMediaBtelController::class, 'selesai'])->name('selesai');
+        Route::post('/{id}/revisi', [AlihMediaBtelController::class, 'revisi'])->name('revisi');
+        Route::post('/{id}/lepas', [AlihMediaBtelController::class, 'lepas'])->name('lepas');
+    });
+
+    // â”€â”€ Stage 5b: Alih Media SU â”€â”€
+    Route::middleware(['role:alih_media_suel'])->prefix('alih-media-su')->name('alih_media_suel.')->group(function () {
+        Route::get('/', [AlihMediaSuelController::class, 'index'])->name('index');
+        Route::get('/search', [AlihMediaSuelController::class, 'search'])->name('search');
+        Route::post('/add/{id}', [AlihMediaSuelController::class, 'add'])->name('add');
+        Route::get('/{id}', [AlihMediaSuelController::class, 'show'])->name('show');
+        Route::get('/{id}/print-perbaikan', [AlihMediaSuelController::class, 'printPerbaikan'])->name('print-perbaikan');
+        Route::post('/{id}/simpan', [AlihMediaSuelController::class, 'simpanHasil'])->name('simpan');
+        Route::post('/{id}/selesai', [AlihMediaSuelController::class, 'selesai'])->name('selesai');
+        Route::post('/{id}/revisi', [AlihMediaSuelController::class, 'revisi'])->name('revisi');
+        Route::post('/{id}/lepas', [AlihMediaSuelController::class, 'lepas'])->name('lepas');
+    });
+
+    // â”€â”€ Laporan â”€â”€
+    Route::middleware(['role:admin,pemimpin,loket,verifikator,warkah,validator_btel,validator_suel,alih_media_btel,alih_media_suel'])
+        ->prefix('reports')->name('reports.')->group(function () {
+            Route::get('/', [ReportController::class, 'index'])->name('index');
+            Route::get('/print', [ReportController::class, 'print'])->name('print');
+            Route::get('/export', [ReportController::class, 'export'])->name('export');
+            Route::get('/print-rapi', [ReportController::class, 'printRapi'])->name('print_rapi');
+        });
 });
 
 require __DIR__ . '/settings.php';

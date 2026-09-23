@@ -1,14 +1,11 @@
 <?php
 
+use App\Http\Controllers\ApiController;
 use App\Http\Controllers\QueueController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
-
-// Public endpoints for display
+// Queue API - public endpoints for display
 Route::get('/status', [QueueController::class, 'status']);
 Route::get('/status/{service}', [QueueController::class, 'statusByService']);
 
@@ -27,3 +24,18 @@ Route::post('/tickets', [QueueController::class, 'createTicket']);
 Route::post('/call/next', [QueueController::class, 'callNext']);
 Route::post('/call/{ticket}/recall', [QueueController::class, 'recall']);
 Route::post('/call/{ticket}/finish', [QueueController::class, 'finish']);
+
+/*
+| API v1 — SmartLoket (modul pertanahan).
+| Endpoint publik: tracking, live stats, dan master jenis permohonan.
+*/
+Route::prefix('v1')->group(function () {
+    // Tracking publik & QR Validation (kode tiket bisa mengandung `/`)
+    Route::get('/tracking/{no_tiket}', [ApiController::class, 'tracking'])->where('no_tiket', '.*');
+
+    // Live Dashboard Stats (publik)
+    Route::get('/stats', [ApiController::class, 'stats']);
+
+    // Master Services
+    Route::get('/jenis-permohonan', [ApiController::class, 'jenisPermohonan']);
+});

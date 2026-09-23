@@ -6,7 +6,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
-import { register } from '@/routes';
 import { request } from '@/routes/password';
 import { Form, Head } from '@inertiajs/react';
 import { LoaderCircle, Mail, Lock, LogIn } from 'lucide-react';
@@ -33,7 +32,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                         {/* Email Field */}
                         <div className="space-y-2">
                             <Label htmlFor="email" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                                Alamat Email
+                                Username atau Email
                             </Label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -41,13 +40,13 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                 </div>
                                 <Input
                                     id="email"
-                                    type="email"
+                                    type="text"
                                     name="email"
                                     required
                                     autoFocus
                                     tabIndex={1}
-                                    autoComplete="email"
-                                    placeholder="nama@contoh.com"
+                                    autoComplete="username"
+                                    placeholder="username atau email"
                                     className="pl-10 h-12 rounded-xl border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                                 />
                             </div>
@@ -112,18 +111,11 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                             Masuk
                         </Button>
 
-                        {/* Register Link */}
+                        {/* Footer hint */}
                         <div className="text-center pt-4 border-t border-slate-200 dark:border-slate-700">
                             <span className="text-sm text-slate-600 dark:text-slate-400">
-                                Belum punya akun?{' '}
+                                Akun dikelola administrator (pendaftaran publik ditutup).
                             </span>
-                            <TextLink
-                                href={register()}
-                                tabIndex={6}
-                                className="text-sm font-semibold text-teal-600 dark:text-teal-400 hover:underline"
-                            >
-                                Daftar sekarang
-                            </TextLink>
                         </div>
                     </>
                 )}

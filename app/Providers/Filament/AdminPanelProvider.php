@@ -29,9 +29,9 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
-            ->brandName('Admin Panel Klinik')
+            ->brandName('SmartLoket')
             ->id('admin')
-            ->path('admin')
+            ->path('panel')
             ->login()
             ->colors([
                 'primary' => Color::Blue,

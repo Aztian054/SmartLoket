@@ -69,7 +69,7 @@ class AuthenticatedSessionController extends Controller
 
         // Check if user has admin role
         $user = Auth::user();
-        if (!in_array($user->role, ['administrator', 'admin'])) {
+        if ($user->role !== 'admin') {
             Auth::logout();
             $request->session()->invalidate();
             return back()->withErrors([
