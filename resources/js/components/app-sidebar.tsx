@@ -2,83 +2,169 @@ import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
-import { LayoutGrid, Monitor, Ticket, ListOrdered, Settings, HelpCircle, Home } from 'lucide-react';
+import { type NavItem, type User } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
+import {
+    LayoutGrid,
+    Database,
+    UserRound,
+    Scale,
+    FileSearch,
+    FolderOpen,
+    MonitorUp,
+    ScanLine,
+    LayoutDashboard,
+    BarChart3,
+} from 'lucide-react';
 import AppLogo from './app-logo';
+import { type SharedData } from '@/types';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Modul Loket SmartLoket',
-        href: '/tracking',
-        icon: ListOrdered,
-        items: [
-            {
-                title: 'Tracking Publik',
-                href: '/tracking',
-            },
-            {
-                title: 'Database Tiket (Admin)',
-                href: '/admin',
-            },
-            {
-                title: 'Loket Penerimaan',
-                href: '/loket',
-            },
-            {
-                title: 'Laporan & Rekap',
-                href: '/reports',
-            },
-        ],
-    },
-    {
-        title: 'Antrian',
-        href: '/queue/display',
-        icon: Ticket,
-        items: [
-            {
-                title: 'Display Antrian',
-                href: '/queue/display',
-            },
-            {
-                title: 'Ambil Tiket',
-                href: '/queue/ticket',
-            },
-            {
-                title: 'Kelola Antrian',
-                href: '/queue/management',
-            },
-        ],
-    },
-];
+function navForRole(role: string | undefined): NavItem[] {
+    const dashboardItem: NavItem[] = [
+        {
+            title: 'Dashboard',
+            href: '/dashboard',
+            icon: LayoutGrid,
+        },
+    ];
+
+    const laporanItem: NavItem[] = [
+        {
+            title: 'Laporan & Rekap',
+            href: '/reports',
+            icon: BarChart3,
+        },
+    ];
+
+    switch (role) {
+        case 'admin':
+            return [
+                ...dashboardItem,
+                {
+                    title: 'Kendali Admin',
+                    href: '/admin',
+                    icon: Database,
+                    items: [
+                        { title: 'Database Tiket', href: '/admin' },
+                        { title: 'Arsip Berkas Selesai', href: '/admin/selesai' },
+                        { title: 'Revisi Berkas', href: '/admin/revisi' },
+                        { title: 'Arsip (Penataan)', href: '/admin/arsip' },
+                        { title: 'Manajemen Akun', href: '/admin/users' },
+                        { title: 'Form Pendaftaran', href: '/admin/form-pendaftaran' },
+                    ],
+                },
+                ...laporanItem,
+            ];
+        case 'pemimpin':
+            return [
+                ...dashboardItem,
+                {
+                    title: 'Monitoring',
+                    href: '/pemimpin',
+                    icon: LayoutDashboard,
+                },
+                ...laporanItem,
+            ];
+        case 'loket':
+            return [
+                ...dashboardItem,
+                {
+                    title: 'Loket Penerimaan',
+                    href: '/loket',
+                    icon: UserRound,
+                },
+                ...laporanItem,
+            ];
+        case 'verifikator':
+            return [
+                ...dashboardItem,
+                {
+                    title: 'Verifikasi Berkas',
+                    href: '/verifikator',
+                    icon: FileSearch,
+                },
+                ...laporanItem,
+            ];
+        case 'warkah':
+            return [
+                ...dashboardItem,
+                {
+                    title: 'Pencarian & Data Warkah',
+                    href: '/warkah',
+                    icon: FolderOpen,
+                },
+                ...laporanItem,
+            ];
+        case 'validator_btel':
+            return [
+                ...dashboardItem,
+                {
+                    title: 'Validasi Pra-BTel',
+                    href: '/validator-bt',
+                    icon: Scale,
+                },
+                ...laporanItem,
+            ];
+        case 'validator_suel':
+            return [
+                ...dashboardItem,
+                {
+                    title: 'Validasi Pra-SuEl',
+                    href: '/validator-su',
+                    icon: Scale,
+                },
+                ...laporanItem,
+            ];
+        case 'alih_media_btel':
+            return [
+                ...dashboardItem,
+                {
+                    title: 'Alih Media Pra-BTel',
+                    href: '/alih-media-bt',
+                    icon: MonitorUp,
+                },
+                ...laporanItem,
+            ];
+        case 'alih_media_suel':
+            return [
+                ...dashboardItem,
+                {
+                    title: 'Alih Media Pra-SuEl',
+                    href: '/alih-media-su',
+                    icon: ScanLine,
+                },
+                ...laporanItem,
+            ];
+        default:
+            return dashboardItem;
+    }
+}
 
 const footerNavItems: NavItem[] = [
     {
         title: 'Beranda',
         href: '/',
-        icon: Home,
+        icon: LayoutGrid,
     },
     {
-        title: 'Bantuan',
-        href: '#',
-        icon: HelpCircle,
+        title: 'Tracking Publik',
+        href: '/tracking',
+        icon: FolderOpen,
     },
 ];
 
 export function AppSidebar() {
+    const { auth } = usePage<SharedData>().props;
+    const user = auth.user as User;
+    const mainNavItems = navForRole(user.role);
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader className="border-b border-sidebar-border/50">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                            <Link href="/dashboard" prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

@@ -7,6 +7,7 @@ use App\Models\Tiket;
 use App\Models\VerifikasiBerkas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class VerifikatorController extends StageWorkflow
 {
@@ -43,8 +44,17 @@ class VerifikatorController extends StageWorkflow
         $verifikasi = VerifikasiBerkas::where('tiket_id', $tiket->id)->latest('iterasi')->first();
         $templateKoreksis = SaranKoreksi::where('jenis_permohonan_id', $tiket->jenis_permohonan_id)->get();
 
-        return view('verifikator.show', compact('tiket', 'isActive', 'mine', 'verifikasi', 'templateKoreksis', 'stage'))
-            ->with('stageLabel', $this->stageLabel());
+        return Inertia::render('smartloket/show', [
+            'tiket' => $tiket,
+            'isActive' => $isActive,
+            'mine' => $mine,
+            'stage' => $stage,
+            'stageLabel' => $this->stageLabel(),
+            'routeBase' => $this->viewBase(),
+            'canSelesai' => true,
+            'lembar' => $verifikasi,
+            'templateKoreksis' => $templateKoreksis,
+        ]);
     }
 
     /** Simpan hasil pemeriksaan verifikasi. */

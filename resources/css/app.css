@@ -145,3 +145,22 @@
         @apply bg-background text-foreground;
     }
 }
+
+.input-sm {
+    height: 2.25rem;
+    width: 100%;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background-color: var(--background);
+    padding: 0 0.75rem;
+    font-size: 0.875rem;
+}
+.select-sm {
+    height: 2.25rem;
+    width: 100%;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background-color: var(--background);
+    padding: 0 0.75rem;
+    font-size: 0.875rem;
+}

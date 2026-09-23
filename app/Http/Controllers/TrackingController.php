@@ -4,28 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Models\Tiket;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class TrackingController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         $tiket = null;
         if ($request->filled('q')) {
-            $tiket = Tiket::with(['jenisPermohonan', 'bidangTanahs', 'penugasans.user'])
+            $tiket = Tiket::with(['jenisPermohonan', 'bidangTanahs', 'penugasans.user', 'riwayatStatuses'])
                 ->where('kode_tiket', 'like', "%{$request->q}%")
                 ->first();
 
             if (! $tiket) {
-                $tiket = Tiket::with(['jenisPermohonan', 'bidangTanahs', 'penugasans.user'])
+                $tiket = Tiket::with(['jenisPermohonan', 'bidangTanahs', 'penugasans.user', 'riwayatStatuses'])
                     ->where('nomor_telepon', 'like', "%{$request->q}%")
                     ->first();
             }
         }
 
-        return view('tracking.index', compact('tiket'));
+        return Inertia::render('smartloket/tracking/index', ['tiket' => $tiket]);
     }
 
-    public function show(string $kode)
+    public function show(string $kode): Response
     {
         $tiket = Tiket::with([
             'jenisPermohonan',
@@ -34,6 +36,6 @@ class TrackingController extends Controller
             'riwayatStatuses',
         ])->where('kode_tiket', $kode)->firstOrFail();
 
-        return view('tracking.show', compact('tiket'));
+        return Inertia::render('smartloket/tracking/show', ['tiket' => $tiket]);
     }
 }

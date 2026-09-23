@@ -3,7 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AlihMediaBtelController;
 use App\Http\Controllers\AlihMediaSuelController;
-use App\Http\Controllers\DisplayController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FormPendaftaranController;
 use App\Http\Controllers\LoketController;
 use App\Http\Controllers\PemimpinController;
@@ -30,33 +30,13 @@ Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
-// Queue management routes - React components
-Route::get('/queue/display', function () {
-    return Inertia::render('queue/display');
-})->name('queue.display');
-
-Route::get('/queue/ticket', function () {
-    return Inertia::render('queue/ticket');
-})->name('queue.ticket');
-
-Route::get('/queue/management', function () {
-    return Inertia::render('queue/management');
-})->name('queue.management');
-
-// Legacy routes for backwards compatibility
-Route::get('/display', [DisplayController::class, 'index'])->name('display.index');
-Route::get('/ticket', [DisplayController::class, 'ticket'])->name('display.ticket');
-Route::post('/ticket', [DisplayController::class, 'createTicket'])->name('display.create-ticket');
-
 // Public tracking (SmartLoket)
 Route::get('/tracking', [TrackingController::class, 'index'])->name('tracking.index');
 Route::get('/tracking/{kode}', [TrackingController::class, 'show'])->name('tracking.show')->where('kode', '.*');
 
 // Protected routes
 Route::middleware(['auth'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 // â”€â”€ Admin: DB Tiket Terpadu, User, Arsip â”€â”€
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('index');

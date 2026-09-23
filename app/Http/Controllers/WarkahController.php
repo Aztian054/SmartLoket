@@ -9,6 +9,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class WarkahController extends StageWorkflow
 {
@@ -81,8 +82,19 @@ class WarkahController extends StageWorkflow
             'alih_media_suel' => $tiket->isStageSelesai('alih_media_suel'),
         ];
 
-        return view('warkah.show', compact('tiket', 'isActive', 'mine', 'lembarKerja', 'stage', 'canSelesai', 'validatorUsers', 'canKonfirmasiKembali', 'alihMediaSelesai'))
-            ->with('stageLabel', $this->stageLabel());
+        return Inertia::render('smartloket/show', [
+            'tiket' => $tiket,
+            'isActive' => $isActive,
+            'mine' => $mine,
+            'stage' => $stage,
+            'stageLabel' => $this->stageLabel(),
+            'routeBase' => 'warkah',
+            'canSelesai' => $canSelesai,
+            'canKonfirmasiKembali' => $canKonfirmasiKembali,
+            'alihMediaSelesai' => $alihMediaSelesai,
+            'lembar' => $lembarKerja,
+            'validatorUsers' => $validatorUsers,
+        ]);
     }
 
     /** Simpan progres pekerjaan Warkah. */

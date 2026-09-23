@@ -8,6 +8,8 @@ use App\Models\TiketPenugasan;
 use App\Models\User;
 use App\Services\TiketFlowService;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class PemimpinController extends Controller
 {
@@ -57,13 +59,21 @@ class PemimpinController extends Controller
         $activities = RiwayatStatus::with(['tiket', 'user'])->latest()->take(10)->get();
         $selesaiTotal = $stageCounts['selesai'];
 
-        return view('pemimpin.index', compact(
-            'stageCounts', 'selesaiTotal', 'beban', 'tikets', 'activities'
-        ));
+        return Inertia::render('smartloket/pemimpin/index', [
+            'stageCounts' => $stageCounts,
+            'selesaiTotal' => $selesaiTotal,
+            'beban' => $beban,
+            'tikets' => $tikets,
+            'activities' => $activities,
+            'filters' => [
+                'q' => $request->input('q'),
+                'status' => $request->input('status'),
+            ],
+        ]);
     }
 
     /** Detail tiket untuk monitoring. */
-    public function show(int $id)
+    public function show(int $id): Response
     {
         $tiket = Tiket::with([
             'jenisPermohonan',
@@ -73,6 +83,6 @@ class PemimpinController extends Controller
             'catatanRevisis',
         ])->findOrFail($id);
 
-        return view('pemimpin.show', compact('tiket'));
+        return Inertia::render('smartloket/pemimpin/show', ['tiket' => $tiket]);
     }
 }

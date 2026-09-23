@@ -7,6 +7,7 @@ use App\Models\Tiket;
 use App\Services\TiketFlowService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 /**
  * StageWorkflow — perilaku umum seluruh tahap pelaksana (Verifikator, Warkah,
@@ -66,10 +67,19 @@ abstract class StageWorkflow extends Controller
             ->get();
 
         // Menu "Revisi" per akun (dokumen Final-Rizki): revisi yang menunggu tahap saya.
-        $revisiMenunggu = $this->flow->revisiForMe($user)->get();
+        $revisiMenunggu = $this->flow->revisiForMe($user)
+            ->with('catatanRevisis')
+            ->get();
 
-        return view($this->viewBase().'.index', compact('activeTikets', 'stats', 'history', 'stage', 'revisiMenunggu'))
-            ->with('stageLabel', $this->stageLabel());
+        return Inertia::render('smartloket/stage/index', [
+            'stage' => $stage,
+            'stageLabel' => $this->stageLabel(),
+            'routeBase' => $this->viewBase(),
+            'stats' => $stats,
+            'activeTikets' => $activeTikets,
+            'history' => $history,
+            'revisiMenunggu' => $revisiMenunggu,
+        ]);
     }
 
     /**
@@ -92,7 +102,13 @@ abstract class StageWorkflow extends Controller
             return response()->json(['tikets' => $tikets->map(fn ($t) => $this->serializeForSearch($t))]);
         }
 
-        return view($this->viewBase().'.search', compact('tikets', 'search', 'stage'));
+        return Inertia::render('smartloket/stage/search', [
+            'tikets' => $tikets->map(fn ($t) => $this->serializeForSearch($t))->values(),
+            'search' => $search,
+            'stage' => $stage,
+            'routeBase' => $this->viewBase(),
+            'stageLabel' => $this->stageLabel(),
+        ]);
     }
 
     /** Add tiket dari DB Admin ke antrian user (anti-duplikat via service). */
@@ -191,7 +207,10 @@ abstract class StageWorkflow extends Controller
 
         $lastRevisi = $tiket->catatanRevisis()->latest('id')->first();
 
-        return view('partials.print_perbaikan', compact('tiket', 'lastRevisi'));
+        return Inertia::render('smartloket/print/perbaikan', [
+            'tiket' => $tiket,
+            'lastRevisi' => $lastRevisi,
+        ]);
     }
 
     /** Keluarkan tiket dari antrian tanpa menyelesaikan (kembali ke DB Admin). */

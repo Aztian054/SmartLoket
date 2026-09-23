@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 /**
@@ -44,9 +45,11 @@ class AdminUsersManagementTest extends TestCase
         $this->actingAs($admin)
             ->get(route('admin.users.edit', $loket->id))
             ->assertOk()
-            ->assertSee($loket->name)
-            ->assertSee($loket->username)
-            ->assertSee('Jabatan tidak dapat diubah');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('smartloket/admin/users-edit')
+                ->where('user.id', $loket->id)
+                ->where('user.name', $loket->name)
+                ->where('user.username', $loket->username));
     }
 
     public function test_admin_dapat_mengubah_data_dan_password_akun(): void
@@ -182,8 +185,9 @@ class AdminUsersManagementTest extends TestCase
         $this->actingAs($admin)
             ->get(route('admin.users.edit', $loket->id))
             ->assertOk()
-            ->assertSee('Password saat ini')
-            ->assertSee('loket1234');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('smartloket/admin/users-edit')
+                ->where('user.password_text', 'loket1234'));
     }
 
     public function test_akun_non_admin_dapat_dihapus(): void

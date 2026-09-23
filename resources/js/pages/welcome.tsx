@@ -1,325 +1,132 @@
-import { dashboard, login } from '@/routes';
-import { type SharedData } from '@/types';
+﻿import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import {
-    Clock,
-    Users,
-    LayoutDashboard,
-    BarChart3,
     CheckCircle,
     ArrowRight,
-    Ticket,
-    Monitor,
-    Bell,
-    Shield,
-    Sparkles,
-    Heart
+    FileSearch,
+    FolderOpen,
+    Scale,
+    ScanLine,
+    BarChart3,
+    Search,
+    ShieldCheck,
+    Layers,
 } from 'lucide-react';
 
 export default function Welcome() {
     const { auth } = usePage<SharedData>().props;
 
+    const stages = [
+        { icon: FileSearch, title: 'Verifikasi Berkas', desc: 'Verifikator memeriksa kelengkapan berkas secara sistematis.' },
+        { icon: FolderOpen, title: 'Warkah', desc: 'Pencarian & pengelolaan data warkah, serah terima berkas BT/SU.' },
+        { icon: Scale, title: 'Validasi BT / SU', desc: 'Validasi pra buku tanah & surat ukur elektronik secara paralel.' },
+        { icon: ScanLine, title: 'Alih Media BT / SU', desc: 'Scan, KKP, dan TTD elektronik hingga sertifikat elektronik terbit.' },
+    ];
+
     const features = [
-        {
-            icon: Ticket,
-            title: 'Antrian Digital',
-            description: 'Ambil nomor antrian secara digital tanpa perlu mengantri fisik',
-            color: 'from-teal-500 to-emerald-500'
-        },
-        {
-            icon: Monitor,
-            title: 'Display Real-time',
-            description: 'Pantau status antrian Anda melalui layar display yang ter-update otomatis',
-            color: 'from-blue-500 to-cyan-500'
-        },
-        {
-            icon: Bell,
-            title: 'Notifikasi Suara',
-            description: 'Sistem panggilan otomatis dengan text-to-speech bahasa Indonesia',
-            color: 'from-purple-500 to-pink-500'
-        },
-        {
-            icon: BarChart3,
-            title: 'Statistik Lengkap',
-            description: 'Dashboard admin dengan laporan dan statistik antrian harian',
-            color: 'from-orange-500 to-amber-500'
-        }
-    ];
-
-    const steps = [
-        {
-            number: '01',
-            title: 'Ambil Tiket',
-            description: 'Pilih layanan yang Anda butuhkan dan ambil nomor antrian digital'
-        },
-        {
-            number: '02',
-            title: 'Tunggu Panggilan',
-            description: 'Pantau layar display atau tunggu pengumuman suara untuk giliran Anda'
-        },
-        {
-            number: '03',
-            title: 'Dapatkan Layanan',
-            description: 'Datang ke loket yang ditunjukkan dan dapatkan pelayanan terbaik'
-        }
-    ];
-
-    const stats = [
-        { value: '99%', label: 'Kepuasan Pasien' },
-        { value: '5+', label: 'Layanan Tersedia' },
-        { value: '1000+', label: 'Antrian/Hari' },
-        { value: '24/7', label: 'Sistem Online' }
+        { icon: Search, title: 'Smart Search', desc: 'Cari & Add berkas dari DB Admin dengan cepat tanpa reload.' },
+        { icon: BarChart3, title: 'Monitoring Real-time', desc: 'Dashboard eksekutif Pemimpin, rekap laporan, dan statistik lengkap.' },
+        { icon: ShieldCheck, title: 'RBAC 9 Peran', desc: 'Akses terkunci sesuai jabatan: Admin, Loket, hingga Alih Media.' },
+        { icon: Layers, title: 'Alur Paralel', desc: 'Validasi & alih media BT/SU berjalan paralel untuk layanan cepat.' },
     ];
 
     return (
-        <>
-            <Head title="SmartLoket">
-                <link rel="preconnect" href="https://fonts.bunny.net" />
-                <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
-            </Head>
-
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
-                {/* Navigation */}
-                <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-white/70 dark:bg-slate-900/70 border-b border-slate-200/50 dark:border-slate-700/50">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="flex items-center justify-between h-16">
-                            {/* Logo */}
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-teal-500/25">
-                                    <Heart className="w-5 h-5 text-white" />
-                                </div>
-                                <div>
-                                    <span className="text-lg font-bold text-slate-900 dark:text-white">SmartLoket</span>
-                                </div>
-                            </div>
-
-                            {/* Navigation Links */}
-                            <div className="hidden md:flex items-center gap-8">
-                                <a href="#features" className="text-sm font-medium text-slate-600 hover:text-teal-600 dark:text-slate-300 dark:hover:text-teal-400 transition-colors">Fitur</a>
-                                <a href="#how-it-works" className="text-sm font-medium text-slate-600 hover:text-teal-600 dark:text-slate-300 dark:hover:text-teal-400 transition-colors">Cara Kerja</a>
-                                <a href="#stats" className="text-sm font-medium text-slate-600 hover:text-teal-600 dark:text-slate-300 dark:hover:text-teal-400 transition-colors">Statistik</a>
-                            </div>
-
-                            {/* Auth Buttons */}
-                            <div className="flex items-center gap-3">
-                                {auth.user ? (
-                                    <Link
-                                        href={dashboard()}
-                                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-teal-500 to-emerald-600 text-white text-sm font-semibold rounded-xl hover:from-teal-600 hover:to-emerald-700 transition-all shadow-lg shadow-teal-500/25 hover:shadow-xl hover:shadow-teal-500/30 hover:-translate-y-0.5"
-                                    >
-                                        <LayoutDashboard className="w-4 h-4" />
-                                        Dashboard
-                                    </Link>
-                                ) : (
-                                    <>
-                                        <Link
-                                            href={login()}
-                                            className="px-4 py-2 text-sm font-medium text-slate-700 hover:text-teal-600 dark:text-slate-300 dark:hover:text-teal-400 transition-colors"
-                                        >
-                                            Masuk
-                                        </Link>
-                                        <Link
-                                            href="/tracking"
-                                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-teal-500 to-emerald-600 text-white text-sm font-semibold rounded-xl hover:from-teal-600 hover:to-emerald-700 transition-all shadow-lg shadow-teal-500/25 hover:shadow-xl hover:shadow-teal-500/30 hover:-translate-y-0.5"
-                                        >
-                                            Lacak Berkas
-                                            <ArrowRight className="w-4 h-4" />
-                                        </Link>
-                                    </>
-                                )}
-                            </div>
+        <div className="flex min-h-screen flex-col">
+            <Head title="Beranda" />
+            <header className="border-b">
+                <div className="flex items-center justify-between px-6 py-4">
+                    <div className="flex items-center gap-3">
+                        <img src="/images/logobpn2026.png" alt="Logo Kementerian ATR/BPN" className="h-10 w-10 rounded-full bg-white p-1 shadow"/>
+                        <div>
+                            <p className="font-bold leading-none">SmartLoket</p>
+                            <p className="text-xs text-muted-foreground">Sistem Loket Pelayanan Pertanahan Elektronik</p>
                         </div>
                     </div>
-                </nav>
-
-                {/* Hero Section */}
-                <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-32 overflow-hidden">
-                    {/* Background Decorations */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-teal-400/20 to-emerald-400/20 rounded-full blur-3xl" />
-                        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-full blur-3xl" />
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-teal-100/30 to-transparent dark:from-teal-900/20 rounded-full blur-3xl" />
-                    </div>
-
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-                        <div className="text-center max-w-4xl mx-auto">
-                            {/* Badge */}
-                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-teal-50 dark:bg-teal-900/30 rounded-full border border-teal-200/50 dark:border-teal-700/50 mb-8">
-                                <Sparkles className="w-4 h-4 text-teal-600 dark:text-teal-400" />
-                                <span className="text-sm font-medium text-teal-700 dark:text-teal-300">Sistem Antrian Digital Modern</span>
-                            </div>
-
-                            {/* Headline */}
-                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white leading-tight mb-6">
-                                Kelola Antrian{' '}
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-emerald-600">
-                                    Klinik
-                                </span>
-                                <br />
-                                dengan Mudah & Efisien
-                            </h1>
-
-                            {/* Subheadline */}
-                            <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-                                Tingkatkan pengalaman pasien dengan sistem antrian digital yang modern.
-                                Real-time display, notifikasi suara, dan manajemen antrian yang efisien.
-                            </p>
-
-                            {/* CTA Buttons */}
-                            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                                <Link
-                                    href="/queue/ticket"
-                                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-teal-500 to-emerald-600 text-white text-base font-semibold rounded-2xl hover:from-teal-600 hover:to-emerald-700 transition-all shadow-xl shadow-teal-500/25 hover:shadow-2xl hover:shadow-teal-500/30 hover:-translate-y-1"
-                                >
-                                    <Ticket className="w-5 h-5" />
-                                    Ambil Nomor Antrian
-                                </Link>
-                                <Link
-                                    href="/queue/display"
-                                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-base font-semibold rounded-2xl border-2 border-slate-200 dark:border-slate-700 hover:border-teal-300 dark:hover:border-teal-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"
-                                >
-                                    <Monitor className="w-5 h-5" />
-                                    Lihat Display Antrian
-                                </Link>
-                            </div>
-                        </div>
-
-                        {/* Hero Stats */}
-                        <div id="stats" className="mt-20 grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
-                            {stats.map((stat, index) => (
-                                <div key={index} className="text-center p-6 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl border border-slate-200/50 dark:border-slate-700/50">
-                                    <div className="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-emerald-600 mb-1">{stat.value}</div>
-                                    <div className="text-sm text-slate-600 dark:text-slate-400">{stat.label}</div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* Features Section */}
-                <section id="features" className="py-20 lg:py-32 bg-white/50 dark:bg-slate-900/50">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-16">
-                            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-4">
-                                Fitur Unggulan
-                            </h2>
-                            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                                Sistem antrian modern dengan berbagai fitur untuk memberikan pengalaman terbaik
-                            </p>
-                        </div>
-
-                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {features.map((feature, index) => (
-                                <div key={index} className="group p-6 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 hover:border-teal-300 dark:hover:border-teal-700 transition-all hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-slate-900/50 hover:-translate-y-1">
-                                    <div className={`w-12 h-12 bg-gradient-to-br ${feature.color} rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
-                                        <feature.icon className="w-6 h-6 text-white" />
-                                    </div>
-                                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">{feature.title}</h3>
-                                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{feature.description}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* How It Works Section */}
-                <section id="how-it-works" className="py-20 lg:py-32">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-16">
-                            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-4">
-                                Cara Kerja
-                            </h2>
-                            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                                Tiga langkah mudah untuk mendapatkan pelayanan tanpa antri lama
-                            </p>
-                        </div>
-
-                        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                            {steps.map((step, index) => (
-                                <div key={index} className="relative text-center">
-                                    {/* Connector Line */}
-                                    {index < steps.length - 1 && (
-                                        <div className="hidden md:block absolute top-12 left-1/2 w-full h-0.5 bg-gradient-to-r from-teal-300 to-emerald-300 dark:from-teal-700 dark:to-emerald-700" />
-                                    )}
-
-                                    {/* Step Circle */}
-                                    <div className="relative z-10 w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-xl shadow-teal-500/25">
-                                        <span className="text-3xl font-bold text-white">{step.number}</span>
-                                    </div>
-
-                                    <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">{step.title}</h3>
-                                    <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{step.description}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* CTA Section */}
-                <section className="py-20 lg:py-32 bg-gradient-to-br from-teal-500 to-emerald-600 relative overflow-hidden">
-                    {/* Background Pattern */}
-                    <div className="absolute inset-0 opacity-10">
-                        <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
-                    </div>
-
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
-                        <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-                            Siap Memulai?
-                        </h2>
-                        <p className="text-xl text-teal-100 mb-10 max-w-2xl mx-auto">
-                            Bergabunglah dengan sistem antrian digital kami dan tingkatkan efisiensi pelayanan klinik Anda
-                        </p>
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <Link
-                                href="/queue/ticket"
-                                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-teal-600 text-base font-semibold rounded-2xl hover:bg-teal-50 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1"
-                            >
-                                <Ticket className="w-5 h-5" />
-                                Ambil Tiket Sekarang
+                    <div className="flex items-center gap-2">
+                        <Link href="/tracking">
+                            <span className="rounded-full border px-4 py-1.5 text-sm hover:bg-muted">Tracking Publik</span>
+                        </Link>
+                        {auth.user ? (
+                            <Link href="/dashboard">
+                                <span className="rounded-full bg-primary px-4 py-1.5 text-sm text-primary-foreground hover:bg-primary/90">Dashboard</span>
                             </Link>
-                            {!auth.user && (
-                                <Link
-                                    href="/tracking"
-                                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-transparent text-white text-base font-semibold rounded-2xl border-2 border-white/30 hover:bg-white/10 transition-all"
-                                >
-                                    Lacak Berkas
-                                    <ArrowRight className="w-5 h-5" />
-                                </Link>
-                            )}
-                        </div>
+                        ) : (
+                            <Link href="/login">
+                                <span className="rounded-full bg-primary px-4 py-1.5 text-sm text-primary-foreground hover:bg-primary/90">Login Petugas</span>
+                            </Link>
+                        )}
+                    </div>
+                </div>
+            </header>
+
+            <section className="bg-gradient-to-br from-[#0b2239] via-[#123459] to-[#163e66] px-6 py-16 text-white">
+                <div className="mx-auto max-w-3xl text-center">
+                    <img src="/images/logobpn2026.png" alt="Logo Kementerian ATR/BPN" className="mx-auto mb-4 h-20 w-20 rounded-full bg-white p-1 object-contain shadow-lg" />
+                    <h1 className="text-4xl font-bold tracking-tight">SmartLoket</h1>
+                    <p className="mt-2 font-medium text-white/90">Kantor Pertanahan Kota Bandar Lampung</p>
+                    <p className="mx-auto mt-4 max-w-xl text-white/70">
+                        Sistem Loket Pelayanan Pertanahan Elektronik — 9 peran, alur paralel, dan pelacakan berkas secara transparan &amp; real-time.
+                    </p>
+                    <div className="mt-6 flex flex-wrap justify-center gap-3">
+                        <Link href="/tracking" className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 font-semibold text-[#0b2239] hover:bg-white/90">
+                            Lacak Status Berkas <ArrowRight className="size-4" />
+                        </Link>
+                        <Link href="/login" className="inline-flex items-center gap-2 rounded-full border border-white/50 px-5 py-2 font-semibold hover:bg-white/10">
+                            Masuk Petugas / Internal Kantah
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
+            <main className="flex-1 space-y-16 px-6 py-14">
+                <section className="mx-auto max-w-5xl">
+                    <h2 className="text-center text-2xl font-bold">Alur Layanan (V2.0)</h2>
+                    <p className="mt-1 text-center text-muted-foreground">Dari Loket Penerimaan hingga Sertifikat Elektronik terbit.</p>
+                    <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        {stages.map((s) => (
+                            <div key={s.title} className="rounded-xl border bg-card p-5 shadow-sm">
+                                <div className="mb-3 inline-flex rounded-lg bg-primary/10 p-2 text-primary">
+                                    <s.icon className="size-5" />
+                                </div>
+                                <h3 className="font-semibold">{s.title}</h3>
+                                <p className="mt-1 text-sm text-muted-foreground">{s.desc}</p>
+                            </div>
+                        ))}
                     </div>
                 </section>
 
-                {/* Footer */}
-                <footer className="py-12 bg-slate-900 text-slate-400">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                            {/* Logo */}
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-xl flex items-center justify-center">
-                                    <Heart className="w-5 h-5 text-white" />
+                <section className="mx-auto max-w-5xl">
+                    <h2 className="text-center text-2xl font-bold">Kenapa SmartLoket?</h2>
+                    <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        {features.map((f) => (
+                            <div key={f.title} className="rounded-xl border bg-card p-5 shadow-sm">
+                                <div className="mb-3 inline-flex rounded-lg bg-emerald-500/10 p-2 text-emerald-600">
+                                    <f.icon className="size-5" />
                                 </div>
-                                <div>
-                                    <span className="text-lg font-bold text-white">Smart</span>
-                                    <span className="text-lg font-bold text-teal-400">Loket</span>
-                                </div>
+                                <h3 className="font-semibold">{f.title}</h3>
+                                <p className="mt-1 text-sm text-muted-foreground">{f.desc}</p>
                             </div>
-
-                            {/* Links */}
-                            <div className="flex items-center gap-6 text-sm">
-                                <Link href="/queue/display" className="hover:text-teal-400 transition-colors">Display</Link>
-                                <Link href="/queue/ticket" className="hover:text-teal-400 transition-colors">Ambil Tiket</Link>
-                                <a href="/admin" className="hover:text-teal-400 transition-colors">Admin Panel</a>
-                            </div>
-
-                            {/* Copyright */}
-                            <div className="text-sm">
-                                © {new Date().getFullYear()} SmartLoket. All rights reserved.
-                            </div>
-                        </div>
+                        ))}
                     </div>
-                </footer>
-            </div>
-        </>
+                </section>
+
+                <section className="mx-auto max-w-3xl rounded-2xl border bg-card p-8 text-center shadow-sm">
+                    <CheckCircle className="mx-auto mb-3 size-8 text-emerald-600" />
+                    <h2 className="text-xl font-bold">Transparan &amp; Akuntabel</h2>
+                    <p className="mx-auto mt-2 max-w-xl text-muted-foreground">
+                        Setiap berkas terlacak dari tiket hingga sertifikat elektronik. Pemohon dapat memantau status berkasnya sendiri kapan saja melalui halaman Tracking Publik.
+                    </p>
+                    <div className="mt-4 flex justify-center">
+                        <Link href="/tracking" className="inline-flex items-center gap-2 text-primary hover:underline">
+                            Coba Tracking Publik <ArrowRight className="size-4" />
+                        </Link>
+                    </div>
+                </section>
+            </main>
+
+            <footer className="border-t bg-background py-6 text-center text-sm text-muted-foreground">
+                © {new Date().getFullYear()} Kantor Pertanahan Kota Bandar Lampung • Sistem Loket Pelayanan Pertanahan Elektronik (SmartLoket)
+            </footer>
+        </div>
     );
 }

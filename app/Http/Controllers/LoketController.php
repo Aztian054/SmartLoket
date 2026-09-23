@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class LoketController extends Controller
 {
@@ -46,7 +48,16 @@ class LoketController extends Controller
         $jenisPermohonans = JenisPermohonan::where('is_active', true)->with('persyaratanDokumens')->get();
         $jenisHaks = JenisHak::where('is_active', true)->orderBy('urutan')->orderBy('kode')->get();
 
-        return view('loket.index', compact('tikets', 'revisiBelumDiproses', 'jenisPermohonans', 'jenisHaks'));
+        return Inertia::render('smartloket/loket/index', [
+            'tikets' => $tikets,
+            'revisiBelumDiproses' => $revisiBelumDiproses,
+            'jenisPermohonans' => $jenisPermohonans,
+            'jenisHaks' => $jenisHaks,
+            'filters' => [
+                'q' => $request->input('q'),
+                'status' => $request->input('status'),
+            ],
+        ]);
     }
 
     /**
@@ -139,7 +150,7 @@ class LoketController extends Controller
         });
     }
 
-    public function show(int $id)
+    public function show(int $id): Response
     {
         $tiket = Tiket::with([
             'jenisPermohonan.persyaratanDokumens',
@@ -149,15 +160,15 @@ class LoketController extends Controller
             'catatanRevisis',
         ])->findOrFail($id);
 
-        return view('loket.show', compact('tiket'));
+        return Inertia::render('smartloket/loket/show', ['tiket' => $tiket]);
     }
 
-    public function edit(int $id)
+    public function edit(int $id): Response
     {
         $tiket = Tiket::with('bidangTanahs')->findOrFail($id);
         $jenisPermohonans = JenisPermohonan::where('is_active', true)->get();
 
-        return view('loket.edit', compact('tiket', 'jenisPermohonans'));
+        return Inertia::render('smartloket/loket/edit', compact('tiket', 'jenisPermohonans'));
     }
 
     public function update(Request $request, int $id)
@@ -197,17 +208,17 @@ class LoketController extends Controller
             ->with('success', "Perbaikan revisi berkas {$tiket->kode_tiket} diterima dan dikirim ke tahap berikutnya.");
     }
 
-    public function printReceipt(int $id)
+    public function printReceipt(int $id): Response
     {
         $tiket = Tiket::with(['jenisPermohonan.persyaratanDokumens', 'bidangTanahs', 'petugasLoket'])->findOrFail($id);
 
-        return view('loket.print_receipt', compact('tiket'));
+        return Inertia::render('smartloket/print/receipt', ['tiket' => $tiket]);
     }
 
-    public function printChecklist(int $id)
+    public function printChecklist(int $id): Response
     {
         $tiket = Tiket::with(['jenisPermohonan.persyaratanDokumens', 'bidangTanahs', 'petugasLoket'])->findOrFail($id);
 
-        return view('loket.print_checklist', compact('tiket'));
+        return Inertia::render('smartloket/print/checklist', ['tiket' => $tiket]);
     }
 }

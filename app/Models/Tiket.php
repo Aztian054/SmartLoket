@@ -41,6 +41,12 @@ class Tiket extends Model
         'diserahkan_ke_validator' => 'boolean',
     ];
 
+    /** Aksesor komputasi — disertakan otomatis saat model diserialisasi (Inertia/JSON). */
+    protected $appends = [
+        'status_label',
+        'status_badge',
+    ];
+
     public static function generateNextKodeTiket(int $iterasi = 1): string
     {
         $today = Carbon::today();

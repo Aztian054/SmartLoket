@@ -6,6 +6,7 @@ use App\Models\Tiket;
 use App\Models\ValidasiBtel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class ValidatorBtelController extends StageWorkflow
 {
@@ -43,8 +44,16 @@ class ValidatorBtelController extends StageWorkflow
             ['tanggal_mulai' => now()->toDateString()]
         );
 
-        return view('validator_btel.show', compact('tiket', 'isActive', 'mine', 'lembar', 'stage'))
-            ->with('stageLabel', $this->stageLabel());
+        return Inertia::render('smartloket/show', [
+            'tiket' => $tiket,
+            'isActive' => $isActive,
+            'mine' => $mine,
+            'stage' => $stage,
+            'stageLabel' => $this->stageLabel(),
+            'routeBase' => $this->viewBase(),
+            'canSelesai' => true,
+            'lembar' => $lembar,
+        ]);
     }
 
     public function simpanHasil(Request $request, int $id)

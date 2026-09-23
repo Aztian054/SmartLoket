@@ -10,6 +10,7 @@ use App\Models\PersyaratanDokumen;
 use App\Models\SaranKoreksi;
 use App\Models\Tiket;
 use App\Models\User;
+use Inertia\Testing\AssertableInertia as Assert;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -99,10 +100,13 @@ class FormPendaftaranControllerTest extends TestCase
         $this->actingAs($this->user('admin'))
             ->get(route('admin.form-pendaftaran'))
             ->assertOk()
-            ->assertSee('Jenis Permohonan')
-            ->assertSee('Saran Koreksi')
-            ->assertSee('Jenis Hak')
-            ->assertSee($jenis->kode);
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('smartloket/admin/form-pendaftaran')
+                ->has('jenisPermohonans', 1)
+                ->where('jenisPermohonans.0.kode', $jenis->kode)
+                ->has('kategoris')
+                ->has('jenisHaks')
+                ->has('saranKoreksis'));
     }
 
     public function test_admin_dapat_menambah_kategori(): void

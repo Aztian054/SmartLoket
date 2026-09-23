@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class AdminController extends Controller
 {
@@ -72,7 +74,17 @@ class AdminController extends Controller
         $jenisPermohonans = JenisPermohonan::where('is_active', true)->with('persyaratanDokumens')->get();
         $jenisHaks = JenisHak::where('is_active', true)->orderBy('urutan')->orderBy('kode')->get();
 
-        return view('admin.index', compact('tikets', 'stats', 'jenisPermohonans', 'jenisHaks'));
+        return Inertia::render('smartloket/admin/index', [
+            'tikets' => $tikets,
+            'stats' => $stats,
+            'jenisPermohonans' => $jenisPermohonans,
+            'jenisHaks' => $jenisHaks,
+            'filters' => [
+                'q' => $request->input('q'),
+                'status' => $request->input('status'),
+                'jenis_permohonan_id' => $request->input('jenis_permohonan_id'),
+            ],
+        ]);
     }
 
     // ---------------- Menu Selesai (migrasi ke arsip) ----------------
@@ -147,13 +159,20 @@ class AdminController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.selesai', [
+        return Inertia::render('smartloket/admin/selesai', [
             'tikets' => $tikets,
             'tahuns' => $this->tahunSelesaiOptions(),
             'jenisPermohonans' => JenisPermohonan::where('is_active', true)->orderBy('nama')->get(),
             'jenisHaks' => JenisHak::where('is_active', true)->orderBy('urutan')->orderBy('kode')->get(),
             'petugasList' => $this->petugasSelesaiOptions(),
             'folders' => ArsipFolder::orderBy('nama_folder')->get(),
+            'filters' => [
+                'q' => $request->input('q'),
+                'tahun' => $request->input('tahun'),
+                'jenis_permohonan_id' => $request->input('jenis_permohonan_id'),
+                'jenis_hak' => $request->input('jenis_hak'),
+                'petugas' => $request->input('petugas'),
+            ],
         ]);
     }
 
@@ -244,7 +263,10 @@ class AdminController extends Controller
 
         $tikets = $query->orderByDesc('id')->paginate(15)->withQueryString();
 
-        return view('admin.revisi', compact('tikets'));
+        return Inertia::render('smartloket/admin/revisi', [
+            'tikets' => $tikets,
+            'filters' => ['q' => $request->input('q')],
+        ]);
     }
 
     /** Admin menghapus (membatalkan) sebuah revisi yang salah kirim. */
@@ -372,7 +394,11 @@ class AdminController extends Controller
         $penugasanPerStage = TiketPenugasan::where('tiket_id', $tiket->id)->get();
         $folders = ArsipFolder::all();
 
-        return view('admin.show', compact('tiket', 'penugasanPerStage', 'folders'));
+        return Inertia::render('smartloket/admin/show', [
+            'tiket' => $tiket,
+            'penugasanPerStage' => $penugasanPerStage,
+            'folders' => $folders,
+        ]);
     }
 
     /** Registrasi tiket selesai ke arsip folder fisik. */
@@ -408,11 +434,11 @@ class AdminController extends Controller
     }
 
     // ---------------- Manajemen Arsip Folder ----------------
-    public function arsipIndex()
+    public function arsipIndex(): Response
     {
         $folders = ArsipFolder::withCount('arsipTikets')->get();
 
-        return view('admin.arsip', compact('folders'));
+        return Inertia::render('smartloket/admin/arsip', ['folders' => $folders]);
     }
 
     public function arsipStore(Request $request)
@@ -436,9 +462,13 @@ class AdminController extends Controller
             $query->where('role', $request->role);
         }
 
-        $users = $query->get();
+        $users = $query->get()->each->makeVisible('password_text');
 
-        return view('admin.users', compact('users'));
+        return Inertia::render('smartloket/admin/users', [
+            'users' => $users,
+            'roles' => array_keys(User::rolesNonAdmin()),
+            'filters' => ['role' => $request->input('role')],
+        ]);
     }
 
     public function usersStore(Request $request)
@@ -470,11 +500,14 @@ class AdminController extends Controller
     }
 
     /** Formulir edit akun — jabatan (role) tidak dapat diubah. */
-    public function usersEdit(int $id)
+    public function usersEdit(int $id): Response
     {
-        $user = User::findOrFail($id);
+        $user = User::findOrFail($id)->makeVisible('password_text');
 
-        return view('admin.users_edit', compact('user'));
+        return Inertia::render('smartloket/admin/users-edit', [
+            'user' => $user,
+            'roles' => array_keys(User::rolesNonAdmin()),
+        ]);
     }
 
     public function usersUpdate(Request $request, int $id)

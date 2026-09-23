@@ -9,6 +9,7 @@ use App\Models\JenisPermohonan;
 use App\Models\Tiket;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 /**
@@ -84,13 +85,13 @@ class AdminSelesaiArsipTest extends TestCase
 
         $this->get(route('admin.selesai'))
             ->assertOk()
-            ->assertSee($tiket->kode_tiket)
-            ->assertSee('Tahun Selesai')
-            ->assertSee($folder->nama_folder)
-            // Script bulk-archive harus benar-benar ter-render via @yield('scripts')
-            ->assertSee('openBulkModal')
-            ->assertSee('Arsipkan Semua Hasil Filter')
-            ->assertSee('id="bulkForm"', false);
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('smartloket/admin/selesai')
+                ->has('tikets.data', 1)
+                ->where('tikets.data.0.kode_tiket', $tiket->kode_tiket)
+                ->has('folders', 1)
+                ->where('folders.0.nama_folder', $folder->nama_folder)
+                ->has('tahuns'));
     }
 
     public function test_filter_tahun_dan_jenis_permohonan_membatasi_daftar(): void
@@ -114,8 +115,11 @@ class AdminSelesaiArsipTest extends TestCase
             'jenis_permohonan_id' => $jpB->id,
         ]))
             ->assertOk()
-            ->assertSee($baru->kode_tiket)
-            ->assertDontSee($lama->kode_tiket);
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('smartloket/admin/selesai')
+                ->has('tikets.data', 1)
+                ->where('tikets.data.0.kode_tiket', $baru->kode_tiket)
+                ->where('tikets.data.0.jenis_permohonan_id', $jpB->id));
     }
 
     public function test_filter_jenis_hak_membatasi_daftar(): void
@@ -132,8 +136,10 @@ class AdminSelesaiArsipTest extends TestCase
 
         $this->get(route('admin.selesai', ['jenis_hak' => 'HM']))
             ->assertOk()
-            ->assertSee($withHm->kode_tiket)
-            ->assertDontSee($withoutHm->kode_tiket);
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('smartloket/admin/selesai')
+                ->has('tikets.data', 1)
+                ->where('tikets.data.0.kode_tiket', $withHm->kode_tiket));
     }
 
     // ------------------------------------------------------------------

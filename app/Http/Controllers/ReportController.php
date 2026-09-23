@@ -7,6 +7,8 @@ use App\Models\Tiket;
 use App\Services\SpreadsheetMlBuilder;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class ReportController extends Controller
 {
@@ -60,10 +62,20 @@ class ReportController extends Controller
         $jenisPermohonanId = $request->filled('jenis_permohonan_id') ? $request->jenis_permohonan_id : '';
         $status = $request->filled('status') ? $request->status : '';
 
-        return view('reports.index', compact(
-            'tikets', 'stats', 'startDate', 'endDate',
-            'jenisPermohonans', 'jenisPermohonanId', 'status'
-        ));
+        return Inertia::render('smartloket/reports/index', [
+            'tikets' => $tikets,
+            'stats' => $stats,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'jenisPermohonans' => $jenisPermohonans,
+            'filters' => [
+                'q' => $request->input('q'),
+                'status' => $status,
+                'jenis_permohonan_id' => $jenisPermohonanId,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+            ],
+        ]);
     }
 
     public function print(Request $request)
@@ -104,7 +116,7 @@ class ReportController extends Controller
             ? $request->end_date
             : Carbon::today()->toDateString();
 
-        return view('reports.print', compact('tikets', 'startDate', 'endDate'));
+        return Inertia::render('smartloket/reports/print', ['tikets' => $tikets, 'startDate' => $startDate, 'endDate' => $endDate]);
     }
 
     /**
@@ -237,6 +249,11 @@ class ReportController extends Controller
             : Carbon::today()->toDateString();
         $status = $request->filled('status') ? $request->status : '';
 
-        return view('reports.print_rapi', compact('tikets', 'startDate', 'endDate', 'status'));
+        return Inertia::render('smartloket/reports/print-rapi', [
+            'tikets' => $tikets,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'status' => $status,
+        ]);
     }
 }

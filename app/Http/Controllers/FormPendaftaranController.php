@@ -10,7 +10,8 @@ use App\Models\PersyaratanDokumen;
 use App\Models\SaranKoreksi;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 /**
  * Menu Admin "Kelola Form Pendaftaran" â€” CRUD master konten form pendaftaran.
@@ -26,9 +27,9 @@ class FormPendaftaranController extends Controller
 {
     // ---------------- Halaman utama (5 tab) ----------------
 
-    public function index(): View
+    public function index(): Response
     {
-        return view('admin.form_pendaftaran', [
+        return Inertia::render('smartloket/admin/form-pendaftaran', [
             'jenisPermohonans' => JenisPermohonan::with(['persyaratanDokumens', 'tikets'])
                 ->orderBy('kode')
                 ->get(),
@@ -76,13 +77,13 @@ class FormPendaftaranController extends Controller
             ->with('success', "Jenis Permohonan {$jp->kode} â€” {$jp->nama} berhasil ditambahkan.");
     }
 
-    public function jenisPermohonanEdit(int $id): View
+    public function jenisPermohonanEdit(int $id): Response
     {
         $jenisPermohonan = JenisPermohonan::with('persyaratanDokumens')->findOrFail($id);
 
-        return view('admin.form_edit_jenis_permohonan', [
-            'jenisPermohonan' => $jenisPermohonan,
-            'kategoris' => KategoriPermohonan::where('is_active', true)->orderBy('urutan')->orderBy('kode')->get(),
+        return Inertia::render('smartloket/admin/form-pendaftaran', [
+            'editJenisPermohonan' => $jenisPermohonan,
+            'kategoris' => KategoriPermohonan::where('is_active', true)->orderBy('urutan')->orderBy('kode')->get()->values(),
         ]);
     }
 
@@ -200,13 +201,13 @@ class FormPendaftaranController extends Controller
         return back()->with('success', 'Saran koreksi berhasil ditambahkan.');
     }
 
-    public function saranKoreksiEdit(int $id): View
+    public function saranKoreksiEdit(int $id): Response
     {
         $saranKoreksi = SaranKoreksi::with('jenisPermohonan')->findOrFail($id);
 
-        return view('admin.form_edit_saran_koreksi', [
-            'saranKoreksi' => $saranKoreksi,
-            'jenisPermohonans' => JenisPermohonan::where('is_active', true)->orderBy('kode')->get(),
+        return Inertia::render('smartloket/admin/form-pendaftaran', [
+            'editSaranKoreksi' => $saranKoreksi,
+            'jenisPermohonans' => JenisPermohonan::where('is_active', true)->orderBy('kode')->get()->values(),
         ]);
     }
 
@@ -257,10 +258,10 @@ class FormPendaftaranController extends Controller
         return back()->with('success', "Jenis Hak {$validated['kode']} â€” {$validated['nama']} berhasil ditambahkan.");
     }
 
-    public function jenisHakEdit(int $id): View
+    public function jenisHakEdit(int $id): Response
     {
-        return view('admin.form_edit_jenis_hak', [
-            'jenisHak' => JenisHak::findOrFail($id),
+        return Inertia::render('smartloket/admin/form-pendaftaran', [
+            'editJenisHak' => JenisHak::findOrFail($id),
         ]);
     }
 
@@ -330,10 +331,10 @@ class FormPendaftaranController extends Controller
         return back()->with('success', "Kategori {$validated['nama']} berhasil ditambahkan.");
     }
 
-    public function kategoriEdit(int $id): View
+    public function kategoriEdit(int $id): Response
     {
-        return view('admin.form_edit_kategori', [
-            'kategori' => KategoriPermohonan::findOrFail($id),
+        return Inertia::render('smartloket/admin/form-pendaftaran', [
+            'editKategori' => KategoriPermohonan::findOrFail($id),
         ]);
     }
 

@@ -7,6 +7,7 @@ use App\Models\JenisPermohonan;
 use App\Models\Tiket;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 /**
@@ -299,13 +300,19 @@ class DemoAlurRealtimeTest extends TestCase
         // Visibilitas revisi: Loket melihat alert merah + isi revisi.
         $this->actingAs($loket2);
         $this->get(route('loket.show', $tiket->id))
-            ->assertSee('Berkas Dikembalikan untuk Perbaikan Revisi')
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('smartloket/loket/show')
+                ->where('tiket.status', 'dikembalikan')
+                ->has('tiket.catatan_revisis', 1))
             ->assertSee('Berkas SHM asli dan KTP pemohon belum terlampir.');
 
         // Admin melihat revisi di menu Revisi Perbaikan.
         $admin = $this->user('admin');
         $this->actingAs($admin);
-        $this->get(route('admin.revisi'))->assertSee('DEMO/G3/T3');
+        $this->get(route('admin.revisi'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('smartloket/admin/revisi')
+                ->where('tikets.data.0.kode_tiket', 'DEMO/G3/T3'));
 
         // Loket menerima perbaikan dari pemohon → resubmit → kembali ke tahap asal.
         $this->actingAs($loket2);
@@ -406,7 +413,10 @@ class DemoAlurRealtimeTest extends TestCase
 
         // Warkah melihat "Revisi Menunggu Saya" di index tahap.
         $this->actingAs($warkah1);
-        $this->get(route('warkah.index'))->assertSee('Revisi Menunggu Saya')->assertSee('DEMO/G4/T4');
+        $this->get(route('warkah.index'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('smartloket/stage/index')
+                ->where('revisiMenunggu.0.kode_tiket', 'DEMO/G4/T4'));
 
         // Warkah meng-Add ulang (dibuka oleh pending revisi), memperbaiki data warkah.
         $this->addTiket($warkah1, $tiket, 'warkah');
@@ -464,9 +474,19 @@ class DemoAlurRealtimeTest extends TestCase
 
         // Privasi antrian per akun Loket.
         $this->actingAs($loket1);
-        $this->get(route('loket.index'))->assertSee('DEMO/V6/T6')->assertDontSee('DEMO/V7/T7');
+        $this->get(route('loket.index'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('smartloket/loket/index')
+                ->has('tikets.data', 1)
+                ->where('tikets.data.0.kode_tiket', 'DEMO/V6/T6'))
+            ->assertDontSee('DEMO/V7/T7');
         $this->actingAs($loket2);
-        $this->get(route('loket.index'))->assertSee('DEMO/V7/T7')->assertDontSee('DEMO/V6/T6');
+        $this->get(route('loket.index'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('smartloket/loket/index')
+                ->has('tikets.data', 1)
+                ->where('tikets.data.0.kode_tiket', 'DEMO/V7/T7'))
+            ->assertDontSee('DEMO/V6/T6');
 
         // Jalur paralel aktif untuk T6 — catatan lembar Warkah PRIVAT ke tahap Warkah.
         $this->addTiket($verif1, $t6, 'verifikasi');
@@ -485,7 +505,11 @@ class DemoAlurRealtimeTest extends TestCase
         // Timeline bersifat GLOBAL — terlihat di akun tahap lain.
         $this->actingAs($verif1);
         $this->get(route('verifikator.show', $t6->id))
-            ->assertSee('Warkah menyerahkan berkas BT/SU ke Validator');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('smartloket/show')
+                ->where('tiket.id', $t6->id))
+            ->assertSee('Warkah menyerahkan berkas')
+            ->assertSee('ke Validator');
 
         // Catatan final (tiket_penugasan.catatan) hanya ditampilkan di Detail Admin.
         $this->selesaiTahap($verif1, $t6, 'verifikasi', 'CATATAN_FINAL_VERIFIKATOR_999');
@@ -514,10 +538,13 @@ class DemoAlurRealtimeTest extends TestCase
 
         // Tracking publik (tanpa login) menampilkan status, timeline, dan riwayat.
         $this->get(route('tracking.show', $t6->kode_tiket))
-            ->assertSee('DEMO/V6/T6')
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('smartloket/tracking/show')
+                ->where('tiket.kode_tiket', $t6->kode_tiket)
+                ->where('tiket.status', 'selesai'))
             ->assertSee('Selesai (Sertifikat El. Terbit)')
             ->assertSee('Berkas terdaftar di Loket')
-            ->assertSee('Warkah menyerahkan berkas BT/SU ke Validator');
+            ->assertSee('Warkah menyerahkan berkas');
 
         // Catatan revisi model terisi → dasar tabele menu Admin Revisi & alert Loket.
         $this->assertDatabaseHas('tiket_penugasan', [

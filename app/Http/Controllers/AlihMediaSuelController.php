@@ -6,6 +6,7 @@ use App\Models\AlihMediaSuel;
 use App\Models\Tiket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class AlihMediaSuelController extends StageWorkflow
 {
@@ -43,8 +44,16 @@ class AlihMediaSuelController extends StageWorkflow
             ['tanggal_mulai' => now()->toDateString()]
         );
 
-        return view('alih_media_suel.show', compact('tiket', 'isActive', 'mine', 'lembar', 'stage'))
-            ->with('stageLabel', $this->stageLabel());
+        return Inertia::render('smartloket/show', [
+            'tiket' => $tiket,
+            'isActive' => $isActive,
+            'mine' => $mine,
+            'stage' => $stage,
+            'stageLabel' => $this->stageLabel(),
+            'routeBase' => $this->viewBase(),
+            'canSelesai' => true,
+            'lembar' => $lembar,
+        ]);
     }
 
     public function simpanHasil(Request $request, int $id)
