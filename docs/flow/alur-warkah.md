@@ -5,7 +5,7 @@
 
 ## 1. Peta Alur Keseluruhan
 
-```
+```txt
 Loket Penerimaan (tiket dibuat)
    → Verifikasi Berkas
    → Warkah (cari & data warkah, serah terima berkas ke validator)
@@ -23,7 +23,7 @@ Setiap tahap memakai pola **pull-based**: Smart Search → Add → Proses → Se
 `LembarKerjaWarkah::STATUS_SERTIPIKAT` merupakan single source of truth milestone Warkah:
 
 | Status | Arti |
-|--------|------|
+| -------- | ------ |
 | `belum` | Data/dokumen BT & SU belum lengkap (default). |
 | **`berkas_lengkap`** | **Milestone eksplisit "Berkas Telah Lengkap (Warkah)"** — petugas Warkah menyatakan keseluruhan data sertipikat (BT & SU) dan dokumen fisik lengkap. |
 | `diserahkan` | Berkas diserahkan ke Validator BT/SU (dipinjam). |
@@ -67,7 +67,7 @@ php artisan test
 ## 5. Rute & Controller Terkait
 
 | Metode | URI | Controller |
-|--------|-----|------------|
+| -------- | ----- | ------------ |
 | GET | `/warkah` | `WarkahController@index` |
 | POST | `/warkah/add/{id}` | `WarkahController@add` |
 | POST | `/warkah/{id}/kirim` | `WarkahController@kirim` (serah terima ke validator) |

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Tiket;
 use App\Models\TiketPenugasan;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -14,9 +15,9 @@ class DashboardController extends Controller
      * Dashboard per-peran (SmartLoket). Data dihitung server-side dan
      * dirender sebagai halaman React/Inertia (pull-based, tanpa polling realtime).
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $user = auth()->user();
+        $user = $request->user();
         $role = $user->role;
 
         $total = Tiket::count();

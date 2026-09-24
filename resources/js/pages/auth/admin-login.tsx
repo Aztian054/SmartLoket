@@ -1,4 +1,3 @@
-import AuthenticatedSessionController from '@/actions/App/Http/Controllers/Auth/AuthenticatedSessionController';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -13,7 +12,7 @@ interface AdminLoginProps {
     canResetPassword: boolean;
 }
 
-export default function AdminLogin({ status, canResetPassword }: AdminLoginProps) {
+export default function AdminLogin({ status }: AdminLoginProps) {
     return (
         <>
             <Head title="Login Admin" />

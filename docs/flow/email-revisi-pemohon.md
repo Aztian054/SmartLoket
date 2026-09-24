@@ -13,7 +13,7 @@ SMTP **tidak pernah** menggagalkan aksi revisi di workflow.
 
 Pemicu:
 
-```
+```txt
 Stage mana pun (verifikasi/warkah/validasi/alih media)
    → aksi revisi (controller memanggil RevisionEmailService::sendForRevisi)
    → email ke email_pemohon tiket

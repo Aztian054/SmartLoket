@@ -1,16 +1,12 @@
-<div align="center">
-
 # SmartLoket
 
-### Sistem Loket Pelayanan Pertanahan Elektronik — Kantor Pertanahan Kota Bandar Lampung
+> Sistem Loket Pelayanan Pertanahan Elektronik — Kantor Pertanahan Kota Bandar Lampung
 
 [![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Inertia](https://img.shields.io/badge/Inertia.js-2-9553c9?style=for-the-badge&logo=inertia&logoColor=white)](https://inertiajs.com)
-
-</div>
 
 ---
 
@@ -31,7 +27,7 @@ Fitur hasil rebranding SmartLoket:
 ## 🏗️ Tech Stack
 
 | Layer | Teknologi |
-|-------|-----------|
+| ------- | ----------- |
 | **Frontend** | React 19, TypeScript, Inertia.js 2, Tailwind CSS 4 |
 | **UI Components** | shadcn/ui, Radix UI, Lucide React |
 | **Backend** | Laravel 12, PHP 8.2+ |
@@ -44,7 +40,7 @@ Fitur hasil rebranding SmartLoket:
 ## 👥 Peran (RBAC 9)
 
 | Peran | Kode | Menu Utama |
-|-------|------|------------|
+| ------- | ------ | ------------ |
 | Admin | `admin` | Database Tiket, Arsip, Revisi, Form Pendaftaran, Settings (Manajemen Akun) |
 | Pemimpin | `pemimpin` | Monitoring, Laporan & Rekap |
 | Loket Penerimaan | `loket` | Loket Penerimaan |
@@ -59,7 +55,7 @@ Fitur hasil rebranding SmartLoket:
 
 ## 🔄 Alur Layanan (V2.0 & 2026)
 
-```
+```txt
 Loket Penerimaan
    → Verifikasi Berkas
    → Warkah (penelusuran data warkah + serah terima berkas ke validator)
@@ -103,7 +99,7 @@ php artisan serve
 Login cepat (hasil `UserSeeder`):
 
 | Username | Password | Peran |
-|----------|----------|-------|
+| ---------- | ---------- | ------- |
 | `admin` | `admin123` | Admin |
 | `pemimpin` | `pemimpin123` | Pemimpin |
 | `loket1` | `loket123` | Loket |
@@ -140,7 +136,7 @@ php -l app/Http/Controllers/*.php
 
 ## 📁 Struktur Penting
 
-```
+```text
 app/
 ├── Http/Controllers/AdminController.php   # DB admin, Manajemen Akun, settings.email
 ├── Models/{User,Tiket,BidangTanah, …}     # model domain
