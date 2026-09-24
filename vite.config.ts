@@ -20,4 +20,11 @@ export default defineConfig({
     esbuild: {
         jsx: 'automatic',
     },
+    server: {
+        watch: {
+            // Hindari crash watcher EBUSY saat tool commit menulis file temp ter-lock
+            // (mis. `.commitmsg.tmp`) di root project pada Windows.
+            ignored: ['**/.commitmsg.tmp', '**/*.tmp'],
+        },
+    },
 });
