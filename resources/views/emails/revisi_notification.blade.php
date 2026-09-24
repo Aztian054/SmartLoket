@@ -10,26 +10,61 @@
         <tr>
             <td align="center">
                 <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 4px 16px rgba(11,34,57,0.08);">
-                    {{-- Header --}}
+                    {{-- Kop Surat Resmi -- Kantor Pertanahan Kota Bandar Lampung --}}
                     <tr>
-                        <td style="background:linear-gradient(90deg,#0b2239,#163659); padding:24px 32px;">
-                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                        <td style="padding:22px 26px 10px; border-bottom:3px double #222;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0"
+                                   style="font-family:Times New Roman, Times, serif; color:#000;">
                                 <tr>
-                                    <td style="color:#ffffff; font-size:20px; font-weight:bold;">
-                                        SmartLoket
+                                    <td width="84" valign="middle" style="padding-right:12px;">
+                                        @php
+                                            // Logo disematkan sebagai inline attachment (CID) supaya aman
+                                            // di Gmail/Outlook; fallback ke URL publik bila file lepas.
+                                            $kopLogoPath = public_path('images/logobpn2026.png');
+                                            $kopLogoSrc = null;
+                                            if (is_file($kopLogoPath)) {
+                                                $kopLogoSrc = (isset($message) && $message instanceof \Illuminate\Mail\Message)
+                                                    ? $message->embed($kopLogoPath)
+                                                    : asset('images/logobpn2026.png');
+                                            }
+                                        @endphp
+                                        @if($kopLogoSrc)
+                                            <img src="{{ $kopLogoSrc }}" alt="Logo Kementerian ATR/BPN"
+                                                 width="84" height="84" style="display:block; width:84px; height:84px;">
+                                        @endif
                                     </td>
-                                    <td align="right" style="color:#c69214; font-size:12px; font-weight:bold; letter-spacing:1px;">
-                                        NOTIFIKASI REVISI
+                                    <td valign="middle" style="text-align:center; font-family:Times New Roman, Times, serif; color:#000;">
+                                        <div style="font-size:11.5px; font-weight:bold; letter-spacing:0.3px;">
+                                            KEMENTERIAN AGRARIA DAN TATA RUANG/BADAN PERTANAHAN NASIONAL
+                                        </div>
+                                        <div style="font-size:15px; font-weight:bold; letter-spacing:0.6px; margin-top:2px;">
+                                            KANTOR PERTANAHAN KOTA BANDAR LAMPUNG
+                                        </div>
+                                        <div style="font-size:10px; font-weight:bold; letter-spacing:2.5px; margin-top:2px;">
+                                            PROVINSI LAMPUNG
+                                        </div>
+                                        <div style="font-size:8.5px; margin-top:4px;">
+                                            Jln. Drs. Warsito No. 5, Bandar Lampung 35215 &nbsp;Telp. (0721) 486217/Fax. (0721) 480223 &nbsp;Email : kot-bandarlampung@atrbpn.go.id
+                                        </div>
                                     </td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
 
+                    {{-- Subtitle / Judul --}}
+                    <tr>
+                        <td style="padding:12px 32px 0; text-align:center;">
+                            <div style="font-family:Times New Roman, Times, serif; font-size:13px; font-weight:bold; text-transform:uppercase; letter-spacing:0.5px; border-bottom:1px solid #222; padding-bottom:8px; color:#000;">
+                                Notifikasi Revisi — Koreksi Berkas Permohonan {{ $tiket->kode_tiket }}
+                            </div>
+                        </td>
+                    </tr>
+
                     {{-- Body --}}
                     <tr>
-                        <td style="padding:32px;">
-                            <h1 style="margin:0 0 16px; font-size:18px; font-weight:bold; color:#0b2239;">
+                        <td style="padding:28px 32px;">
+                            <h1 style="margin:0 0 12px; font-size:16px; font-weight:bold; color:#0b2239;">
                                 Koreksi Berkas Permohonan — {{ $tiket->kode_tiket }}
                             </h1>
 
