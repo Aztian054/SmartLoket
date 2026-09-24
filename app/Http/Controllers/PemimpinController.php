@@ -46,7 +46,11 @@ class PemimpinController extends Controller
             ->sortByDesc('beban_aktif');
 
         // Filtering tiket untuk pemantauan
-        $q = Tiket::with(['jenisPermohonan', 'petugasLoket'])->latest();
+        $q = Tiket::with(['jenisPermohonan', 'petugasLoket'])
+            ->sortable(
+                (string) $request->input('sort', 'id'),
+                (string) $request->input('dir', 'desc')
+            );
         if ($request->filled('status')) {
             $q->where('status', $request->status);
         }
@@ -68,6 +72,8 @@ class PemimpinController extends Controller
             'filters' => [
                 'q' => $request->input('q'),
                 'status' => $request->input('status'),
+                'sort' => $request->input('sort'),
+                'dir' => $request->input('dir'),
             ],
         ]);
     }

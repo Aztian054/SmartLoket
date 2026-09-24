@@ -1,13 +1,15 @@
 import AppLayout from '@/layouts/app-layout';
 import { FlashMessages } from '@/components/smartloket/flash-messages';
 import { StatusBadge } from '@/components/smartloket/status-badge';
+import { SortableTh } from '@/components/smartloket/sortable-th';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { type BreadcrumbItem, type SmartTiket } from '@/types';
+import { sortRows, type SortDir } from '@/lib/sort';
 import { Head, router } from '@inertiajs/react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ArrowRight, Database, History, Inbox, Lock, PlusCircle, RefreshCw, Search, UserCheck } from 'lucide-react';
 
 interface StageStats {
@@ -63,6 +65,17 @@ export default function StageIndex({ stage, stageLabel, routeBase, stats, active
     const [loading, setLoading] = useState(false);
     const [results, setResults] = useState<SearchRow[]>([]);
     const [searched, setSearched] = useState(false);
+
+    const [activeSort, setActiveSort] = useState<{ key: string; dir: SortDir }>({ key: 'id', dir: 'desc' });
+    const activeSorted = useMemo(
+        () =>
+            sortRows(activeTikets, activeSort.key, activeSort.dir, (t) => {
+                if (activeSort.key === 'jenis') return t.jenis_permohonan?.nama ?? '';
+                if (activeSort.key === 'tanggal_add') return (t.penugasans ?? []).find((pp) => pp.status === 'proses')?.tanggal_add ?? '';
+                return (t as unknown as Record<string, unknown>)[activeSort.key];
+            }),
+        [activeTikets, activeSort]
+    );
 
     const breadcrumbs: BreadcrumbItem[] = [{ title: STAGE_TITLES[stage] ?? stageLabel, href: `/${routeBase}` }];
     const prefix = PREFIX[stage] ?? routeBase;
@@ -341,16 +354,16 @@ export default function StageIndex({ stage, stageLabel, routeBase, stats, active
                                 <table className="w-full text-sm">
                                     <thead className="bg-muted/40 text-left text-xs uppercase text-muted-foreground">
                                         <tr>
-                                            <th className="px-3 py-2">Kode Tiket</th>
-                                            <th className="px-3 py-2">Pemohon</th>
-                                            <th className="px-3 py-2">Jenis Permohonan</th>
-                                            <th className="px-3 py-2">Di-Add</th>
-                                            <th className="px-3 py-2">Status</th>
+                                            <SortableTh label="Kode Tiket" sortKey="kode_tiket" current={activeSort.key} dir={activeSort.dir} onSort={(key, d) => setActiveSort({ key, dir: d })} />
+                                            <SortableTh label="Pemohon" sortKey="nama_pemohon" current={activeSort.key} dir={activeSort.dir} onSort={(key, d) => setActiveSort({ key, dir: d })} />
+                                            <SortableTh label="Jenis Permohonan" sortKey="jenis" current={activeSort.key} dir={activeSort.dir} onSort={(key, d) => setActiveSort({ key, dir: d })} />
+                                            <SortableTh label="Di-Add" sortKey="tanggal_add" current={activeSort.key} dir={activeSort.dir} onSort={(key, d) => setActiveSort({ key, dir: d })} />
+                                            <SortableTh label="Status" sortKey="status" current={activeSort.key} dir={activeSort.dir} onSort={(key, d) => setActiveSort({ key, dir: d })} />
                                             <th className="px-3 py-2 text-right">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {activeTikets.map((t) => {
+                                        {activeSorted.map((t) => {
                                             const p = (t.penugasans ?? []).find((pp) => pp.status === 'proses');
                                             return (
                                                 <tr key={t.id} className="border-t">

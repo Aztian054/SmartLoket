@@ -1,6 +1,15 @@
 {{-- Kop Surat Resmi — Kantor Pertanahan Kota Bandar Lampung (Kementerian ATR/BPN) --}}
 @props(['subtitle' => null])
 
+@php
+    // Logo disematkan sebagai data URI agar tetap tampil pada PDF (dompdf)
+    // tanpa perlu akses HTTP eksternal; fallback ke asset() bila file lepas.
+    $kopLogoPath = public_path('images/logobpn2026.png');
+    $kopLogoSrc = is_file($kopLogoPath)
+        ? 'data:image/png;base64,'.base64_encode(file_get_contents($kopLogoPath))
+        : asset('images/logobpn2026.png');
+@endphp
+
 <style>
     .kop-wrapper {
         display: flex;
@@ -31,7 +40,7 @@
 
 <div class="kop-wrapper">
     <div class="kop-logo">
-        <img src="{{ asset('asset/logobpn2026.png') }}" alt="Logo Kementerian ATR/BPN">
+        <img src="{{ $kopLogoSrc }}" alt="Logo Kementerian ATR/BPN">
     </div>
     <div class="kop-text">
         <div class="kop-institusi">KEMENTERIAN AGRARIA DAN TATA RUANG/BADAN PERTANAHAN NASIONAL</div>

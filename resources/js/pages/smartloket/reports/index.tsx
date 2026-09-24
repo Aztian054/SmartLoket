@@ -1,10 +1,12 @@
 import AppLayout from '@/layouts/app-layout';
 import { FlashMessages } from '@/components/smartloket/flash-messages';
 import { StatusBadge } from '@/components/smartloket/status-badge';
+import { SortableTh } from '@/components/smartloket/sortable-th';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { type BreadcrumbItem, type SmartJenisPermohonan, type SmartTiket } from '@/types';
+import { type SortDir } from '@/lib/sort';
 import { type Paginated } from '../loket/types';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
@@ -16,7 +18,7 @@ interface ReportsIndexProps {
     startDate: string;
     endDate: string;
     jenisPermohonans: SmartJenisPermohonan[];
-    filters: { q?: string; status?: string; jenis_permohonan_id?: string; start_date?: string; end_date?: string };
+    filters: { q?: string; status?: string; jenis_permohonan_id?: string; start_date?: string; end_date?: string; sort?: string; dir?: string };
 }
 
 export default function ReportsIndex({ tikets, stats, startDate, endDate, jenisPermohonans, filters }: ReportsIndexProps) {
@@ -26,6 +28,10 @@ export default function ReportsIndex({ tikets, stats, startDate, endDate, jenisP
     const [jp, setJp] = useState(filters.jenis_permohonan_id ?? '');
     const [sd, setSd] = useState(filters.start_date ?? startDate);
     const [ed, setEd] = useState(filters.end_date ?? endDate);
+    const sort = filters.sort ?? 'id';
+    const dir: SortDir = filters.dir === 'asc' ? 'asc' : 'desc';
+    const changeSort = (key: string, d: SortDir) =>
+        router.get('/reports', { q, status, jenis_permohonan_id: jp, start_date: sd, end_date: ed, sort: key, dir: d }, { preserveState: true, preserveScroll: true });
 
     const doFilter = () => router.get('/reports', { q, status, jenis_permohonan_id: jp, start_date: sd, end_date: ed });
     const query = () => `?q=${encodeURIComponent(q)}&status=${status}&jenis_permohonan_id=${jp}&start_date=${sd}&end_date=${ed}`;
@@ -111,14 +117,14 @@ export default function ReportsIndex({ tikets, stats, startDate, endDate, jenisP
                     <table className="w-full text-sm">
                         <thead className="bg-muted/40 text-left text-xs uppercase text-muted-foreground">
                             <tr>
-                                <th className="px-3 py-2">Kode</th>
-                                <th className="px-3 py-2">Pemohon</th>
-                                <th className="px-3 py-2">Jenis</th>
-                                <th className="px-3 py-2">Bidang</th>
-                                <th className="px-3 py-2">Status</th>
-                                <th className="px-3 py-2">Masuk</th>
-                                <th className="px-3 py-2">Selesai</th>
-                                <th className="px-3 py-2">Loket</th>
+                                <SortableTh label="Kode" sortKey="kode_tiket" current={sort} dir={dir} onSort={changeSort} />
+                                <SortableTh label="Pemohon" sortKey="nama_pemohon" current={sort} dir={dir} onSort={changeSort} />
+                                <SortableTh label="Jenis" sortKey="jenis" current={sort} dir={dir} onSort={changeSort} />
+                                <SortableTh label="Bidang" sortKey="jumlah_bidang" current={sort} dir={dir} onSort={changeSort} />
+                                <SortableTh label="Status" sortKey="status" current={sort} dir={dir} onSort={changeSort} />
+                                <SortableTh label="Masuk" sortKey="tanggal_masuk" current={sort} dir={dir} onSort={changeSort} />
+                                <SortableTh label="Selesai" sortKey="tanggal_selesai" current={sort} dir={dir} onSort={changeSort} />
+                                <SortableTh label="Loket" sortKey="petugas_loket" current={sort} dir={dir} onSort={changeSort} />
                             </tr>
                         </thead>
                         <tbody>

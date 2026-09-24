@@ -1,11 +1,14 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
+import { sortRows, type SortDir } from '@/lib/sort';
+import { SortableTh } from '@/components/smartloket/sortable-th';
 import { Head } from '@inertiajs/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FlashMessages } from '@/components/smartloket/flash-messages';
 import { RolleBadge } from '@/components/smartloket/status-badge';
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, BarChart3, CheckCircle2, Clock, Inbox, TrendingUp } from 'lucide-react';
+import { useMemo, useState } from 'react';
 
 interface StatCard {
     label: string;
@@ -65,6 +68,12 @@ const roleNames: Record<string, string> = {
 export default function Dashboard({ role, nama, stat, chart, overdue, server_waktu }: DashboardProps) {
     const breadcrumbs: BreadcrumbItem[] = [{ title: 'Dashboard', href: '/dashboard' }];
     const maxNilai = Math.max(1, ...chart.map((c) => Math.max(c.masuk, c.selesai)));
+
+    const [overdueSort, setOverdueSort] = useState<{ key: string; dir: SortDir }>({ key: 'kode_tiket', dir: 'asc' });
+    const sortedOverdue = useMemo(
+        () => sortRows(overdue, overdueSort.key, overdueSort.dir),
+        [overdue, overdueSort]
+    );
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -153,14 +162,14 @@ export default function Dashboard({ role, nama, stat, chart, overdue, server_wak
                                 <table className="w-full text-sm">
                                     <thead className="bg-muted/40 text-left text-xs uppercase text-muted-foreground">
                                         <tr>
-                                            <th className="px-2 py-2">Kode Tiket</th>
-                                            <th className="px-2 py-2">Pemohon</th>
-                                            <th className="px-2 py-2">Masuk</th>
-                                            <th className="px-2 py-2">Status</th>
+                                            <SortableTh label="Kode Tiket" sortKey="kode_tiket" current={overdueSort.key} dir={overdueSort.dir} onSort={(key, d) => setOverdueSort({ key, dir: d })} />
+                                            <SortableTh label="Pemohon" sortKey="nama_pemohon" current={overdueSort.key} dir={overdueSort.dir} onSort={(key, d) => setOverdueSort({ key, dir: d })} />
+                                            <SortableTh label="Masuk" sortKey="tanggal_masuk" current={overdueSort.key} dir={overdueSort.dir} onSort={(key, d) => setOverdueSort({ key, dir: d })} />
+                                            <SortableTh label="Status" sortKey="status_label" current={overdueSort.key} dir={overdueSort.dir} onSort={(key, d) => setOverdueSort({ key, dir: d })} />
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {overdue.map((o) => (
+                                        {sortedOverdue.map((o) => (
                                             <tr key={o.id} className="border-t">
                                                 <td className="px-2 py-2 font-semibold">{o.kode_tiket}</td>
                                                 <td className="px-2 py-2">{o.nama_pemohon}</td>

@@ -1,11 +1,13 @@
 import AppLayout from '@/layouts/app-layout';
 import { FlashMessages } from '@/components/smartloket/flash-messages';
 import { StatusBadge } from '@/components/smartloket/status-badge';
+import { SortableTh } from '@/components/smartloket/sortable-th';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { type BreadcrumbItem, type SmartJenisPermohonan, type SmartTiket } from '@/types';
+import { type SortDir } from '@/lib/sort';
 import { type Paginated } from '../loket/types';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
@@ -18,7 +20,7 @@ interface SelesaiProps {
     jenisHaks: Array<{ id: number; kode: string; nama: string }>;
     petugasList: Array<{ id: number; name: string }>;
     folders: Array<{ id: number; nama_folder: string }>;
-    filters: { q?: string; tahun?: string; jenis_permohonan_id?: string; jenis_hak?: string; petugas?: string };
+    filters: { q?: string; tahun?: string; jenis_permohonan_id?: string; jenis_hak?: string; petugas?: string; sort?: string; dir?: string };
 }
 
 export default function AdminSelesai({ tikets, tahuns, jenisPermohonans, jenisHaks, petugasList, folders, filters }: SelesaiProps) {
@@ -37,6 +39,10 @@ export default function AdminSelesai({ tikets, tahuns, jenisPermohonans, jenisHa
     const toggle = (id: number) => setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
     const toggleAll = () => setSelected(allChecked ? [] : allIds);
     const doFilter = () => router.get('/admin/selesai', { ...filters, q });
+    const sort = filters.sort ?? 'tanggal_selesai';
+    const dir: SortDir = filters.dir === 'asc' ? 'asc' : 'desc';
+    const changeSort = (key: string, d: SortDir) =>
+        router.get('/admin/selesai', { ...filters, q, sort: key, dir: d }, { preserveState: true, preserveScroll: true });
     const submitBulk = (e: React.FormEvent) => {
         e.preventDefault();
         router.post('/admin/selesai/arsipkan-massal', { folder_id, nama_arsip, ids: selected.join(',') }, { onSuccess: () => setOpenBulk(false) });
@@ -107,11 +113,11 @@ export default function AdminSelesai({ tikets, tahuns, jenisPermohonans, jenisHa
                                 <th className="px-3 py-2">
                                     <input type="checkbox" checked={allChecked} onChange={toggleAll} />
                                 </th>
-                                <th className="px-3 py-2">Kode Tiket</th>
-                                <th className="px-3 py-2">Pemohon</th>
-                                <th className="px-3 py-2">Jenis</th>
-                                <th className="px-3 py-2">Bidang</th>
-                                <th className="px-3 py-2">Selesai</th>
+                                <SortableTh label="Kode Tiket" sortKey="kode_tiket" current={sort} dir={dir} onSort={changeSort} />
+                                <SortableTh label="Pemohon" sortKey="nama_pemohon" current={sort} dir={dir} onSort={changeSort} />
+                                <SortableTh label="Jenis" sortKey="jenis" current={sort} dir={dir} onSort={changeSort} />
+                                <SortableTh label="Bidang" sortKey="jumlah_bidang" current={sort} dir={dir} onSort={changeSort} />
+                                <SortableTh label="Selesai" sortKey="tanggal_selesai" current={sort} dir={dir} onSort={changeSort} />
                                 <th className="px-3 py-2">Arsip</th>
                                 <th className="px-3 py-2 text-right">Aksi</th>
                             </tr>

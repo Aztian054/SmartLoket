@@ -38,7 +38,10 @@ class LoketController extends Controller
             $query->where('status', $request->status);
         }
 
-        $tikets = $query->orderByDesc('id')->paginate(15)->withQueryString();
+        $tikets = $query->sortable(
+            (string) $request->input('sort', 'id'),
+            (string) $request->input('dir', 'desc')
+        )->paginate(15)->withQueryString();
 
         $revisiBelumDiproses = Tiket::where('status', 'dikembalikan')
             ->whereHas('catatanRevisis', fn ($q) => $q->where('sudah_diproses', false))
@@ -56,6 +59,8 @@ class LoketController extends Controller
             'filters' => [
                 'q' => $request->input('q'),
                 'status' => $request->input('status'),
+                'sort' => $request->input('sort'),
+                'dir' => $request->input('dir'),
             ],
         ]);
     }

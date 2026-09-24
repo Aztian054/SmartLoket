@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -56,6 +57,42 @@ class Tiket extends Model
         $countToday = self::whereDate('tanggal_masuk', $today)->count() + 1;
 
         return sprintf('K/%d/%s/%d', $countToday, $dateCode, $iterasi);
+    }
+
+    /**
+     * Urutkan daftar tiket/berkas berdasarkan kolom aman (whitelist) untuk
+     * fitur sortir pada tabel daftar tiket — admin, petugas (loket & tahap),
+     * dan pemimpin. Kolom di luar whitelist jatuh ke urutan id desc.
+     *
+     * @param  string  $sort  kunci kolom UI (kode_tiket, nama_pemohon, jenis, ...)
+     * @param  string  $dir   arah urut: asc | desc (selain itu jatuh ke desc)
+     */
+    public function scopeSortable(Builder $query, string $sort = 'id', string $dir = 'desc'): Builder
+    {
+        $direction = strtolower($dir) === 'asc' ? 'asc' : 'desc';
+
+        // Jenis permohonan diurutkan alfabetis (nama) via subquery relasi.
+        if ($sort === 'jenis') {
+            return $query->orderBy(
+                JenisPermohonan::select('nama')
+                    ->whereColumn('jenis_permohonans.id', 'tikets.jenis_permohonan_id'),
+                $direction
+            );
+        }
+
+        $columns = [
+            'id' => 'id',
+            'kode_tiket' => 'kode_tiket',
+            'nama_pemohon' => 'nama_pemohon',
+            'nik_pemohon' => 'nik_pemohon',
+            'jumlah_bidang' => 'jumlah_bidang',
+            'status' => 'status',
+            'tanggal_masuk' => 'tanggal_masuk',
+            'tanggal_selesai' => 'tanggal_selesai',
+            'petugas_loket' => 'petugas_loket_id',
+        ];
+
+        return $query->orderBy($columns[$sort] ?? 'id', $direction);
     }
 
     public function jenisPermohonan(): BelongsTo

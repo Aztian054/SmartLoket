@@ -1,17 +1,23 @@
 import AppLayout from '@/layouts/app-layout';
 import { FlashMessages } from '@/components/smartloket/flash-messages';
 import { StatusBadge } from '@/components/smartloket/status-badge';
+import { SortableTh } from '@/components/smartloket/sortable-th';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { type BreadcrumbItem, type SmartTiket } from '@/types';
+import { type SortDir } from '@/lib/sort';
 import { type Paginated } from '../loket/types';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import { RotateCcw, Trash2 } from 'lucide-react';
 
-export default function AdminRevisi({ tikets, filters }: { tikets: Paginated<SmartTiket>; filters: { q?: string } }) {
+export default function AdminRevisi({ tikets, filters }: { tikets: Paginated<SmartTiket>; filters: { q?: string; sort?: string; dir?: string } }) {
     const [q, setQ] = useState(filters.q ?? '');
+    const sort = filters.sort ?? 'id';
+    const dir: SortDir = filters.dir === 'asc' ? 'asc' : 'desc';
+    const changeSort = (key: string, d: SortDir) =>
+        router.get('/admin/revisi', { q, sort: key, dir: d }, { preserveState: true, preserveScroll: true });
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Database Tiket (Admin)', href: '/admin' },
         { title: 'Revisi Berkas', href: '/admin/revisi' },
@@ -39,11 +45,11 @@ export default function AdminRevisi({ tikets, filters }: { tikets: Paginated<Sma
                     <table className="w-full text-sm">
                         <thead className="bg-muted/40 text-left text-xs uppercase text-muted-foreground">
                             <tr>
-                                <th className="px-3 py-2">Kode Tiket</th>
-                                <th className="px-3 py-2">Pemohon</th>
+                                <SortableTh label="Kode Tiket" sortKey="kode_tiket" current={sort} dir={dir} onSort={changeSort} />
+                                <SortableTh label="Pemohon" sortKey="nama_pemohon" current={sort} dir={dir} onSort={changeSort} />
                                 <th className="px-3 py-2">Catatan Revisi</th>
-                                <th className="px-3 py-2">Petugas Loket</th>
-                                <th className="px-3 py-2">Status</th>
+                                <SortableTh label="Petugas Loket" sortKey="petugas_loket" current={sort} dir={dir} onSort={changeSort} />
+                                <SortableTh label="Status" sortKey="status" current={sort} dir={dir} onSort={changeSort} />
                                 <th className="px-3 py-2 text-right">Aksi</th>
                             </tr>
                         </thead>

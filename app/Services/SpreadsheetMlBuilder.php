@@ -13,8 +13,9 @@ class SpreadsheetMlBuilder
     /**
      * @param  array<int,string>  $headers
      * @param  array<int,array<int,mixed>>  $rows
+     * @param  array<int,array{text:string,style:string}>  $kop  blok kop surat (merged rows) di atas header tabel
      */
-    public static function build(string $sheetName, array $headers, array $rows): string
+    public static function build(string $sheetName, array $headers, array $rows, array $kop = []): string
     {
         $sheet = preg_replace('/[\x00-\x1F\x7F]/', '', $sheetName) ?? 'Sheet1';
 
@@ -27,6 +28,10 @@ class SpreadsheetMlBuilder
             ." xmlns:html=\"http://www.w3.org/TR/REC-html40\">\n";
         $xml .= " <Styles>\n";
         $xml .= '  <Style ss:ID="Default" ss:Name="Normal"><Alignment ss:Vertical="Center"/></Style>'."\n";
+        $xml .= '  <Style ss:ID="kop-i"><Font ss:Bold="1" ss:Size="10"/><Alignment ss:Horizontal="Center" ss:Vertical="Center"/></Style>'."\n";
+        $xml .= '  <Style ss:ID="kop-k"><Font ss:Bold="1" ss:Size="13"/><Alignment ss:Horizontal="Center" ss:Vertical="Center"/></Style>'."\n";
+        $xml .= '  <Style ss:ID="kop-a"><Font ss:Size="9"/><Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/></Style>'."\n";
+        $xml .= '  <Style ss:ID="kop-s"><Font ss:Bold="1" ss:Size="11" ss:Color="#0B2239"/><Alignment ss:Horizontal="Center" ss:Vertical="Center"/></Style>'."\n";
         $xml .= '  <Style ss:ID="Header"><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#0B2239" ss:Pattern="Solid"/></Style>'."\n";
         $xml .= " </Styles>\n";
         $xml .= ' <Worksheet ss:Name="'.self::xmlAttr($sheet)."\">\n";
@@ -34,6 +39,21 @@ class SpreadsheetMlBuilder
 
         foreach ($headers as $idx => $header) {
             $xml .= '   <Column ss:AutoFitWidth="1" ss:Width="'.(14 + (strlen((string) $header) / 2) * 4).'"/>'."\n";
+        }
+
+        // Kop surat (identitas kantor) sebagai baris-judul merger di atas tabel.
+        $mergeAcross = max(0, count($headers) - 1);
+        foreach ($kop as $line) {
+            $text = $line['text'] ?? '';
+            $style = $line['style'] ?? 'kop-i';
+            $height = $style === 'kop-a' ? 26 : 18;
+            $xml .= "   <Row ss:Height=\"{$height}\">";
+            $xml .= '<Cell ss:MergeAcross="'.$mergeAcross.'" ss:StyleID="'.self::xmlAttr($style).'">';
+            $xml .= '<Data ss:Type="String">'.self::xmlText($text).'</Data>';
+            $xml .= "</Cell></Row>\n";
+        }
+        if ($kop !== []) {
+            $xml .= "   <Row ss:Height=\"8\"/>\n";
         }
 
         // Header row.

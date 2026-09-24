@@ -54,7 +54,10 @@ class AdminController extends Controller
             $query->where('jenis_permohonan_id', $request->jenis_permohonan_id);
         }
 
-        $tikets = $query->orderByDesc('id')->paginate(15)->withQueryString();
+        $tikets = $query->sortable(
+            (string) $request->input('sort', 'id'),
+            (string) $request->input('dir', 'desc')
+        )->paginate(15)->withQueryString();
 
         $stats = [
             'total' => Tiket::count(),
@@ -84,6 +87,8 @@ class AdminController extends Controller
                 'q' => $request->input('q'),
                 'status' => $request->input('status'),
                 'jenis_permohonan_id' => $request->input('jenis_permohonan_id'),
+                'sort' => $request->input('sort'),
+                'dir' => $request->input('dir'),
             ],
         ]);
     }
@@ -155,8 +160,10 @@ class AdminController extends Controller
     public function selesai(Request $request)
     {
         $tikets = $this->filterSelesaiQuery($request)
-            ->orderByDesc('tanggal_selesai')
-            ->orderByDesc('id')
+            ->sortable(
+                (string) $request->input('sort', 'tanggal_selesai'),
+                (string) $request->input('dir', 'desc')
+            )
             ->paginate(15)
             ->withQueryString();
 
@@ -173,6 +180,8 @@ class AdminController extends Controller
                 'jenis_permohonan_id' => $request->input('jenis_permohonan_id'),
                 'jenis_hak' => $request->input('jenis_hak'),
                 'petugas' => $request->input('petugas'),
+                'sort' => $request->input('sort'),
+                'dir' => $request->input('dir'),
             ],
         ]);
     }
@@ -262,11 +271,18 @@ class AdminController extends Controller
             });
         }
 
-        $tikets = $query->orderByDesc('id')->paginate(15)->withQueryString();
+        $tikets = $query->sortable(
+            (string) $request->input('sort', 'id'),
+            (string) $request->input('dir', 'desc')
+        )->paginate(15)->withQueryString();
 
         return Inertia::render('smartloket/admin/revisi', [
             'tikets' => $tikets,
-            'filters' => ['q' => $request->input('q')],
+            'filters' => [
+                'q' => $request->input('q'),
+                'sort' => $request->input('sort'),
+                'dir' => $request->input('dir'),
+            ],
         ]);
     }
 

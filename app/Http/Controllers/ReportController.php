@@ -40,7 +40,10 @@ class ReportController extends Controller
             });
         }
 
-        $tikets = $query->orderByDesc('id')->paginate(20)->withQueryString();
+        $tikets = $query->sortable(
+            (string) $request->input('sort', 'id'),
+            (string) $request->input('dir', 'desc')
+        )->paginate(20)->withQueryString();
 
         $stats = [
             'total' => Tiket::count(),
@@ -74,6 +77,8 @@ class ReportController extends Controller
                 'jenis_permohonan_id' => $jenisPermohonanId,
                 'start_date' => $startDate,
                 'end_date' => $endDate,
+                'sort' => $request->input('sort'),
+                'dir' => $request->input('dir'),
             ],
         ]);
     }
@@ -203,7 +208,13 @@ class ReportController extends Controller
             ];
         }
 
-        $xml = SpreadsheetMlBuilder::build('Rekap Monitoring', $headers, $rows);
+        $xml = SpreadsheetMlBuilder::build('Rekap Monitoring', $headers, $rows, [
+            ['text' => 'KEMENTERIAN AGRARIA DAN TATA RUANG/BADAN PERTANAHAN NASIONAL', 'style' => 'kop-i'],
+            ['text' => 'KANTOR PERTANAHAN KOTA BANDAR LAMPUNG', 'style' => 'kop-k'],
+            ['text' => 'PROVINSI LAMPUNG', 'style' => 'kop-i'],
+            ['text' => 'Jln. Drs. Warsito No. 5, Bandar Lampung 35215 • Telp. (0721) 486217/Fax. (0721) 480223 • Email : kot-bandarlampung@atrbpn.go.id', 'style' => 'kop-a'],
+            ['text' => 'REKAP MONITORING BERKAS PERMOHONAN PERTANAHAN', 'style' => 'kop-s'],
+        ]);
 
         $filename = 'Rekap_LOKET2026_'.now()->format('Ymd_His').'.xls';
 

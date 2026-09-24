@@ -1,12 +1,14 @@
 import AppLayout from '@/layouts/app-layout';
 import { FlashMessages } from '@/components/smartloket/flash-messages';
 import { StatusBadge } from '@/components/smartloket/status-badge';
+import { SortableTh } from '@/components/smartloket/sortable-th';
 import { LoketTiketModal } from '@/components/smartloket/forms/loket-tiket-modal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { type BreadcrumbItem, type SmartJenisPermohonan, type SmartTiket } from '@/types';
+import { type SortDir } from '@/lib/sort';
 import { type Paginated } from '../loket/types';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
@@ -19,7 +21,7 @@ interface AdminIndexProps {
     stats: { total: number; menunggu: number; proses: number; selesai: number; dikembalikan: number; batal: number };
     jenisPermohonans: SmartJenisPermohonan[];
     jenisHaks: Array<{ id: number; kode: string; nama: string }>;
-    filters: { q?: string; status?: string; jenis_permohonan_id?: string };
+    filters: { q?: string; status?: string; jenis_permohonan_id?: string; sort?: string; dir?: string };
 }
 
 export default function AdminIndex({ tikets, stats, jenisPermohonans, jenisHaks, filters }: AdminIndexProps) {
@@ -27,6 +29,10 @@ export default function AdminIndex({ tikets, stats, jenisPermohonans, jenisHaks,
     const [q, setQ] = useState(filters.q ?? '');
     const [status, setStatus] = useState(filters.status ?? '');
     const [jp, setJp] = useState(filters.jenis_permohonan_id ?? '');
+    const sort = filters.sort ?? 'id';
+    const dir: SortDir = filters.dir === 'asc' ? 'asc' : 'desc';
+    const changeSort = (key: string, d: SortDir) =>
+        router.get('/admin', { q, status, jenis_permohonan_id: jp, sort: key, dir: d }, { preserveState: true, preserveScroll: true });
     const breadcrumbs: BreadcrumbItem[] = [{ title: 'Database Tiket (Admin)', href: '/admin' }];
 
     const cards = [
@@ -99,14 +105,14 @@ export default function AdminIndex({ tikets, stats, jenisPermohonans, jenisHaks,
                     <table className="w-full text-sm">
                         <thead className="bg-muted/40 text-left text-xs uppercase text-muted-foreground">
                             <tr>
-                                <th className="px-3 py-2">Kode</th>
-                                <th className="px-3 py-2">Pemohon</th>
-                                <th className="px-3 py-2">Jenis</th>
-                                <th className="px-3 py-2">Bidang</th>
-                                <th className="px-3 py-2">Status</th>
+                                <SortableTh label="Kode" sortKey="kode_tiket" current={sort} dir={dir} onSort={changeSort} />
+                                <SortableTh label="Pemohon" sortKey="nama_pemohon" current={sort} dir={dir} onSort={changeSort} />
+                                <SortableTh label="Jenis" sortKey="jenis" current={sort} dir={dir} onSort={changeSort} />
+                                <SortableTh label="Bidang" sortKey="jumlah_bidang" current={sort} dir={dir} onSort={changeSort} />
+                                <SortableTh label="Status" sortKey="status" current={sort} dir={dir} onSort={changeSort} />
                                 <th className="px-3 py-2">Warkah</th>
                                 <th className="px-3 py-2">Sertipikat</th>
-                                <th className="px-3 py-2">Masuk</th>
+                                <SortableTh label="Masuk" sortKey="tanggal_masuk" current={sort} dir={dir} onSort={changeSort} />
                                 <th className="px-3 py-2 text-right">Aksi</th>
                             </tr>
                         </thead>

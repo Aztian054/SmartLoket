@@ -1,12 +1,14 @@
 import AppLayout from '@/layouts/app-layout';
 import { FlashMessages } from '@/components/smartloket/flash-messages';
 import { StatusBadge } from '@/components/smartloket/status-badge';
+import { SortableTh } from '@/components/smartloket/sortable-th';
 import { LoketTiketModal } from '@/components/smartloket/forms/loket-tiket-modal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { type BreadcrumbItem, type SmartJenisPermohonan, type SmartTiket } from '@/types';
+import { type SortDir } from '@/lib/sort';
 import { type Paginated } from './types';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
@@ -17,7 +19,7 @@ interface LoketIndexProps {
     revisiBelumDiproses: SmartTiket[];
     jenisPermohonans: SmartJenisPermohonan[];
     jenisHaks: Array<{ id: number; kode: string; nama: string }>;
-    filters: { q?: string; status?: string };
+    filters: { q?: string; status?: string; sort?: string; dir?: string };
 }
 
 const STATUS_OPTS: Array<[string, string]> = [
@@ -37,6 +39,10 @@ export default function LoketIndex({ tikets, revisiBelumDiproses, jenisPermohona
     const [openModal, setOpenModal] = useState(false);
     const [q, setQ] = useState(filters.q ?? '');
     const [status, setStatus] = useState(filters.status ?? '');
+    const sort = filters.sort ?? 'id';
+    const dir: SortDir = filters.dir === 'asc' ? 'asc' : 'desc';
+    const changeSort = (key: string, d: SortDir) =>
+        router.get('/loket', { q, status, sort: key, dir: d }, { preserveState: true, preserveScroll: true });
 
     const breadcrumbs: BreadcrumbItem[] = [{ title: 'Loket Penerimaan', href: '/loket' }];
 
@@ -142,12 +148,12 @@ return (
                             <table className="w-full text-sm">
                                 <thead className="bg-muted/40 text-left text-xs uppercase text-muted-foreground">
                                     <tr>
-                                        <th className="px-3 py-2">Kode Tiket</th>
-                                        <th className="px-3 py-2">Pemohon</th>
-                                        <th className="px-3 py-2">Jenis</th>
-                                        <th className="px-3 py-2 text-center">Bidang</th>
-                                        <th className="px-3 py-2">Status</th>
-                                        <th className="px-3 py-2">Tgl Masuk</th>
+                                        <SortableTh label="Kode Tiket" sortKey="kode_tiket" current={sort} dir={dir} onSort={changeSort} />
+                                        <SortableTh label="Pemohon" sortKey="nama_pemohon" current={sort} dir={dir} onSort={changeSort} />
+                                        <SortableTh label="Jenis" sortKey="jenis" current={sort} dir={dir} onSort={changeSort} />
+                                        <SortableTh label="Bidang" sortKey="jumlah_bidang" current={sort} dir={dir} onSort={changeSort} align="center" />
+                                        <SortableTh label="Status" sortKey="status" current={sort} dir={dir} onSort={changeSort} />
+                                        <SortableTh label="Tgl Masuk" sortKey="tanggal_masuk" current={sort} dir={dir} onSort={changeSort} />
                                         <th className="px-3 py-2 text-right">Aksi</th>
                                     </tr>
                                 </thead>
