@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Mail\RevisionNotification;
 use App\Models\Tiket;
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\View;
@@ -29,6 +30,9 @@ class RevisionEmailService
             // pastikan revisi_ke/status sudah ter-update oleh returnForRevisi.
             $tiket = $tiket->fresh() ?? $tiket;
 
+            // Pengirim dinamis dari profil Admin (Settings → Manajemen Akun).
+            $this->applyAdminMailConfig();
+
             $mail = new RevisionNotification($tiket, $isiRevisi, $dariStage);
             $this->prepareAttachment($mail, $tiket);
 
@@ -41,6 +45,39 @@ class RevisionEmailService
         } catch (\Throwable $e) {
             Log::warning("SmartLoket: gagal mengirim email revisi {$tiket->kode_tiket} ke {$email}: {$e->getMessage()}");
         }
+    }
+
+    /**
+     * Pengirim utama email sistem berasal dari Profil Admin.
+     *
+     * Dinamis & non-persisten: konfigurasi Mail di-set pada runtime per pengiriman,
+     * sehingga email/sandi aplikasi admin dapat diganti tanpa menyentuh .env.
+     * Bila profil admin belum melengkapi email/sandi aplikasi, konfigurasi .env
+     * (MAIL_FROM_ADDRESS / MAIL_USERNAME / MAIL_PASSWORD) tetap dipakai.
+     */
+    protected function applyAdminMailConfig(): void
+    {
+        $admin = User::where('role', 'admin')->orderBy('id')->first();
+
+        if (! $admin || ! filter_var((string) $admin->email, FILTER_VALIDATE_EMAIL)) {
+            return;
+        }
+
+        $namaPengirim = $admin->name ?: 'SmartLoket';
+
+        config([
+            'mail.from.address' => $admin->email,
+            'mail.from.name' => $namaPengirim,
+        ]);
+
+        if (is_string($admin->sandi_aplikasi) && $admin->sandi_aplikasi !== '') {
+            config([
+                'mail.mailers.smtp.username' => $admin->email,
+                'mail.mailers.smtp.password' => $admin->sandi_aplikasi,
+            ]);
+        }
+
+        Mail::alwaysFrom($admin->email, $namaPengirim);
     }
 
     protected function prepareAttachment(RevisionNotification $mail, Tiket $tiket): void

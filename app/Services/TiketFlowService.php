@@ -60,8 +60,21 @@ class TiketFlowService
         'warkah' => [], // paralel: Warkah terlihat begitu tiket diterima
         'validasi_btel' => [],
         'validasi_suel' => [],
-        'alih_media_btel' => ['verifikasi', 'validasi_btel', 'validasi_suel'],
-        'alih_media_suel' => ['verifikasi', 'validasi_btel', 'validasi_suel'],
+        // Alih Media MELIHAT seluruh berkas yang belum diprosesnya (belum di-Add /
+        // belum selesai di tahapnya). Yang belum lolos gate dikunci + diberi alasan
+        // jelas di UI pencarian (Menunggu Warkah / Validator dst.) — bukan disembunyikan.
+        'alih_media_btel' => [],
+        'alih_media_suel' => [],
+    ];
+
+    /** Nama pendek tiap tahap untuk pesan alasan terkunci (UI pencarian). */
+    public const STAGE_SHORT_LABELS = [
+        'verifikasi' => 'Verifikator',
+        'warkah' => 'Warkah',
+        'validasi_btel' => 'Validator BT',
+        'validasi_suel' => 'Validator SU',
+        'alih_media_btel' => 'Alih Media BT',
+        'alih_media_suel' => 'Alih Media SU',
     ];
 
     /** Kode status tiket yang merepresentasikan tahap tertentu saat sedang di-Add. */
@@ -453,6 +466,74 @@ class TiketFlowService
         if ($stage === 'verifikasi' && $tiket->isStageSelesai('verifikasi') && ! $this->hasPendingRevisiForStage($tiket, 'verifikasi')) {
             throw new \RuntimeException("Berkas {$tiket->kode_tiket} sudah pernah diverifikasi.");
         }
+    }
+
+    /**
+     * Bolehkah tiket di-Add pada tahap $stage — cerminan EXACT dari
+     * assertCanClaim (tanpa efek samping), dipakai UI pencarian untuk
+     * menampilkan sinyal terkunci + alasan yang jelas.
+     */
+    public function canClaimStage(Tiket $tiket, string $stage): bool
+    {
+        return $this->claimStageBlockReason($tiket, $stage) === null;
+    }
+
+    /**
+     * Alasan pertama yang memblokir claim tahap $stage, atau null bila boleh.
+     * Kondisi SAMA dengan assertCanClaim — hanya dibalut agar pesan di UI
+     * pencarian paling informatif (mis. "Menunggu Validator BT ✓ / SU ✗").
+     */
+    public function claimStageBlockReason(Tiket $tiket, string $stage): ?string
+    {
+        if (in_array($tiket->status, ['selesai', 'batal'], true)) {
+            return 'Berkas sudah selesai/dibatalkan sehingga tidak dapat diambil.';
+        }
+
+        // Validator BT/SU dibuka oleh flag diserahkan_ke_validator dari Warkah
+        // (alur paralel — tanpa menunggu Verifikator).
+        if (in_array($stage, ['validasi_btel', 'validasi_suel'], true) && ! $tiket->isDiserahkanKeValidator()) {
+            return 'Menunggu Warkah menyerahkan berkas BT/SU ke Validator (diserahkan_ke_validator belum aktif).';
+        }
+
+        // Alih Media: menunggu KIRIM berkas Warkah, lalu Verifikator + Validator BT/SU selesai.
+        if (in_array($stage, ['alih_media_btel', 'alih_media_suel'], true)) {
+            if (! $tiket->isDiserahkanKeValidator()) {
+                return 'Menunggu Warkah menyerahkan berkas BT/SU ke Validator.';
+            }
+
+            if (! $tiket->isStageSelesai('verifikasi')) {
+                return 'Menunggu Verifikator selesai.';
+            }
+
+            $bt = $tiket->isStageSelesai('validasi_btel');
+            $su = $tiket->isStageSelesai('validasi_suel');
+            if (! $bt || ! $su) {
+                return sprintf('Menunggu Validator BT %s / SU %s.', $bt ? '✓' : '✗', $su ? '✓' : '✗');
+            }
+        }
+
+        // Tahap yang sudah selesai tidak diproses ulang, kecuali ada revisi menunggu.
+        if ($stage !== 'verifikasi' && $tiket->isStageSelesai($stage) && ! $this->hasPendingRevisiForStage($tiket, $stage)) {
+            return 'Tahap '.$this->shortStageLabel($stage).' sudah selesai pada berkas ini — tidak dapat di-Add ulang.';
+        }
+
+        // Gate prasyarat umum.
+        foreach (self::STAGE_GATES[$stage] as $needStage) {
+            if (! $tiket->isStageSelesai($needStage)) {
+                return 'Menunggu tahap '.$this->shortStageLabel($needStage).' selesai.';
+            }
+        }
+
+        if ($stage === 'verifikasi' && $tiket->isStageSelesai('verifikasi') && ! $this->hasPendingRevisiForStage($tiket, 'verifikasi')) {
+            return 'Berkas ini sudah pernah diverifikasi.';
+        }
+
+        return null;
+    }
+
+    protected function shortStageLabel(string $stage): string
+    {
+        return self::STAGE_SHORT_LABELS[$stage] ?? ucfirst(str_replace('_', ' ', $stage));
     }
 
     /** Apakah ada revisi yang masih menunggu perbaikan pada tahap tertentu. */

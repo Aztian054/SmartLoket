@@ -44,6 +44,7 @@ export interface User {
     created_at: string;
     updated_at: string;
     role?: string;
+    no_hp?: string | null;
     [key: string]: unknown; // This allows for additional properties...
 }
 
@@ -116,6 +117,7 @@ export interface SmartTiket {
     arsips?: Array<{ id: number; nama_arsip: string; folder_id: number; tanggal_arsip?: string | null }>;
     monitor_warkah?: string | null;
     monitor_sertipikat?: string | null;
+    monitor_sertipikat_label?: string | null;
     nama_petugas_loket?: string | null;
     status: string;
     status_pembetulan: string;

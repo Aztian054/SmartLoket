@@ -3,10 +3,10 @@ import { FlashMessages } from '@/components/smartloket/flash-messages';
 import { RolleBadge } from '@/components/smartloket/status-badge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { type BreadcrumbItem } from '@/types';
-import { Head, router } from '@inertiajs/react';
-import { useState } from 'react';
-import { Pencil, Power, Trash2, Users } from 'lucide-react';
+import { type BreadcrumbItem, type SharedData } from '@/types';
+import { Head, router, usePage } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
+import { Mail, Pencil, Power, Trash2, Users } from 'lucide-react';
 
 interface AdminUser {
     id: number;
@@ -31,6 +31,7 @@ const roleLabels: Record<string, string> = {
 };
 
 export default function AdminUsers({ users, roles, filters }: { users: AdminUser[]; roles: string[]; filters: { role?: string } }) {
+    const { auth } = usePage<SharedData>().props;
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Database Tiket (Admin)', href: '/admin' },
         { title: 'Manajemen Akun', href: '/admin/users' },
@@ -43,6 +44,25 @@ export default function AdminUsers({ users, roles, filters }: { users: AdminUser
     const [role, setRole] = useState('loket');
     const [nip, setNip] = useState('');
     const [no_hp, setNoHp] = useState('');
+
+    // ── Pengaturan email pengirim (Profil Admin) ──
+    const [hpAdmin, setHpAdmin] = useState(auth.user.no_hp ?? '');
+    const [emailSender, setEmailSender] = useState(auth.user.email ?? '');
+    const [sandi, setSandi] = useState('');
+
+    useEffect(() => {
+        setEmailSender(auth.user.email ?? '');
+        setHpAdmin(auth.user.no_hp ?? '');
+    }, [auth.user.email, auth.user.no_hp]);
+
+    const submitEmailSettings = (e: React.FormEvent) => {
+        e.preventDefault();
+        router.post(
+            '/admin/settings/email',
+            { no_hp: hpAdmin || null, email: emailSender, sandi_aplikasi: sandi || null },
+            { preserveScroll: true, onSuccess: () => setSandi('') },
+        );
+    };
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -79,6 +99,30 @@ export default function AdminUsers({ users, roles, filters }: { users: AdminUser
                         </select>
                         <Button onClick={() => setOpen(true)}>Buat Akun</Button>
                     </div>
+                </div>
+
+                <div className="rounded-xl border bg-card p-5">
+                    <h2 className="flex items-center gap-2 text-lg font-bold">
+                        <Mail className="size-5 text-primary" /> Pengaturan Email Pengirim (Profil Admin)
+                    </h2>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                        Email revisi berkas otomatis dikirim dari akun admin ini. Isi Sandi Aplikasi bila ingin memakai email admin
+                        sebagai pengirim SMTP; biarkan kosong bila tetap memakai kredensial <code className="rounded bg-muted px-1">.env</code>.
+                    </p>
+                    <form onSubmit={submitEmailSettings} className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        <Field label="No. HP Admin">
+                            <input value={hpAdmin} onChange={(e) => setHpAdmin(e.target.value)} maxLength={20} placeholder="08xxxxxxxxxx" className="input-sm" />
+                        </Field>
+                        <Field label="Email Pengirim" required>
+                            <input type="email" value={emailSender} onChange={(e) => setEmailSender(e.target.value)} required className="input-sm" />
+                        </Field>
+                        <Field label="Sandi Aplikasi (SMTP)">
+                            <input type="password" value={sandi} onChange={(e) => setSandi(e.target.value)} maxLength={255} placeholder="Kosongkan = tetap .env" className="input-sm" />
+                        </Field>
+                        <div className="flex items-end">
+                            <Button type="submit">Simpan Pengaturan</Button>
+                        </div>
+                    </form>
                 </div>
 
                 <FlashMessages />

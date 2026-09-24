@@ -140,6 +140,80 @@ class WarkahController extends StageWorkflow
     }
 
     /**
+     * Milestone "BERKAS TELAH LENGKAP (WARKAH)" — penanda eksplisit bahwa seluruh
+     * data & dokumen BT/SU sudah lengkap disiapkan Warkah. Ditandai sekali (tidak
+     * bisa diulang), direkam ke RiwayatStatus, dan tampil di monitoring/tracking.
+     * Gerbang sertipikat: Data Sertipikat BT & SU = selesai, Dokumen BT & SU = ada.
+     */
+    public function berkasLengkap(Request $request, int $id)
+    {
+        $tiket = Tiket::findOrFail($id);
+        $this->ensureMine($tiket);
+
+        $lembarKerja = LembarKerjaWarkah::firstOrCreate(
+            ['tiket_id' => $tiket->id],
+            ['petugas_id' => Auth::id()]
+        );
+
+        if (in_array($lembarKerja->status_sertipikat, ['diserahkan', 'dikembalikan'], true)) {
+            $label = LembarKerjaWarkah::STATUS_SERTIPIKAT[$lembarKerja->status_sertipikat] ?? $lembarKerja->status_sertipikat;
+
+            return back()->with('error', "Berkas BT/SU sudah berstatus {$label}; milestone \"Berkas Telah Lengkap\" tidak dapat ditandai lagi.");
+        }
+
+        if ($lembarKerja->status_sertipikat === 'berkas_lengkap') {
+            return back()->with('info', 'Milestone "Berkas Telah Lengkap" sudah ditandai pada berkas ini.');
+        }
+
+        $validated = $request->validate([
+            'status_data_sertipikat_bt' => 'required|in:belum,proses,selesai',
+            'status_data_sertipikat_su' => 'required|in:belum,proses,selesai',
+            'status_sosialisasi' => 'nullable|in:belum,proses,selesai',
+            'status_dokumen_bt' => 'required|in:ada,tidak_ada',
+            'status_dokumen_su' => 'required|in:ada,tidak_ada',
+            'gabungan' => 'nullable|boolean',
+            'jumlah_berkas' => 'nullable|integer|min:0',
+            'jumlah_halaman' => 'nullable|integer|min:0',
+            'keterangan_status' => 'nullable|string',
+            'catatan' => 'nullable|string',
+        ]);
+
+        $lengkap = $validated['status_data_sertipikat_bt'] === 'selesai'
+            && $validated['status_data_sertipikat_su'] === 'selesai'
+            && $validated['status_dokumen_bt'] === 'ada'
+            && $validated['status_dokumen_su'] === 'ada';
+
+        if (! $lengkap) {
+            return back()->with('error', 'Berkas belum lengkap: Data Sertipikat BT & SU harus berstatus Selesai, dan Dokumen BT & SU harus Ada.');
+        }
+
+        $lembarKerja->update([
+            'status_data_sertipikat_bt' => 'selesai',
+            'status_data_sertipikat_su' => 'selesai',
+            'status_sosialisasi' => $validated['status_sosialisasi'] ?? ($lembarKerja->status_sosialisasi ?? 'proses'),
+            'status_dokumen_bt' => 'ada',
+            'status_dokumen_su' => 'ada',
+            'gabungan' => $request->boolean('gabungan', $lembarKerja->gabungan),
+            'jumlah_berkas' => $validated['jumlah_berkas'] ?? $lembarKerja->jumlah_berkas,
+            'jumlah_halaman' => $validated['jumlah_halaman'] ?? $lembarKerja->jumlah_halaman,
+            'keterangan_status' => $validated['keterangan_status'] ?? null,
+            'catatan' => $validated['catatan'] ?? null,
+            'status_sertipikat' => 'berkas_lengkap',
+            'petugas_id' => Auth::id(),
+        ]);
+
+        RiwayatStatus::create([
+            'tiket_id' => $tiket->id,
+            'stage_dari' => 'Warkah',
+            'stage_ke' => 'Warkah (berkas_lengkap)',
+            'changed_by' => Auth::id(),
+            'keterangan' => 'MILESTONE BERKAS TELAH LENGKAP (WARKAH) — Data Sertipikat BT & SU lengkap, Dokumen BT & SU tersedia. Berkas siap diserahkan ke Validator.',
+        ]);
+
+        return back()->with('success', 'Milestone "Berkas Telah Lengkap (Warkah)" ditandai — berkas siap diserahkan ke Validator BT/SU.');
+    }
+
+    /**
      * SERAHKAN BERKAS WARKAH ke Validator BT/SU — mencatat serah terima lengkap
      * (penerima, tanggal & jam serah, kondisi berkas BT/SU, catatan kondisi) dan
      * membuka gerbang Validator BT/SU secara paralel (tanpa menunggu Verifikator).
@@ -236,6 +310,7 @@ class WarkahController extends StageWorkflow
         $waktuKembali = Carbon::parse($validated['waktu_kembali']);
 
         $lembarKerja->update([
+            'status_sertipikat' => 'dikembalikan',
             'status_pengembalian' => 'dikembalikan',
             'tanggal_kembali' => $waktuKembali->toDateString(),
             'waktu_kembali' => $waktuKembali,

@@ -15,6 +15,7 @@ export interface TrackingTiket {
     tanggal_masuk: string | null;
     jenis_permohonan?: { id: number; kode: string; nama: string; kategori: string } | null;
     riwayat_statuses?: Array<{ id: number; stage_dari: string; stage_ke: string; keterangan: string; created_at: string }>;
+    lembar_kerja_warkahs?: Array<{ status_sertipikat?: string | null; status_sertipikat_label?: string | null }>;
 }
 
 const STATUS_ORDER = ['diterima', 'verifikasi', 'warkah', 'validasi_btel', 'validasi_suel', 'alih_media_btel', 'alih_media_suel', 'selesai'];
@@ -48,6 +49,12 @@ export function dateTimeTxt(v?: string | null): string {
 }
 export function TrackingResult({ tiket }: { tiket: TrackingTiket }) {
     const currentIdx = STATUS_ORDER.indexOf(tiket.status);
+
+    const lastWarkah = Array.isArray(tiket.lembar_kerja_warkahs) ? tiket.lembar_kerja_warkahs.at(-1) : undefined;
+    const lastMilestone =
+        lastWarkah?.status_sertipikat && lastWarkah.status_sertipikat !== 'belum'
+            ? (lastWarkah.status_sertipikat_label ?? lastWarkah.status_sertipikat)
+            : null;
 
     return (
         <div className="mt-6">
@@ -113,6 +120,11 @@ export function TrackingResult({ tiket }: { tiket: TrackingTiket }) {
                     <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold">
                         Status: {tiket.status_label} {tiket.status_pembetulan !== 'P0' ? `(${tiket.status_pembetulan})` : ''}
                     </span>
+                    {lastMilestone && (
+                        <span className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-700">
+                            Warkah: {lastMilestone}
+                        </span>
+                    )}
                 </div>
             </div>
 

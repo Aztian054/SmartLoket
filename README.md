@@ -1,229 +1,163 @@
 <div align="center">
 
-# 🏥 SALK - Sistem Antrian Loket Klinik
+# SmartLoket
 
-### Solusi Digital untuk Manajemen Antrian Klinik yang Modern, Cepat, dan Efisien
+### Sistem Loket Pelayanan Pertanahan Elektronik — Kantor Pertanahan Kota Bandar Lampung
 
 [![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
-[![Filament](https://img.shields.io/badge/Filament-4-FBBF24?style=for-the-badge&logo=laravel&logoColor=black)](https://filamentphp.com)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Inertia](https://img.shields.io/badge/Inertia.js-2-9553c9?style=for-the-badge&logo=inertia&logoColor=white)](https://inertiajs.com)
 
 </div>
 
 ---
 
-## 👨‍💻 Tim Pengembang
+## 📋 Deskripsi
 
-Proyek ini dikembangkan oleh mahasiswa **Teknik Informatika, UIN Sunan Gunung Djati Bandung**:
+**SmartLoket** adalah aplikasi web untuk digitalisasi pelayanan loket pertanahan di Kantor Pertanahan Kota Bandar Lampung. Sistem mengelola **10 tiket layanan** (Pertama Kali, Jual Beli, Ganti Nama, Roya, Hak Tanggungan, dan lain-lain) dengan alur kerja **9 peran RBAC** dari Loket Penerimaan hingga Sertifikat Elektronik terbit, disertai **Tracking Publik** bagi pemohon dan **Laporan & Rekap** untuk pimpinan.
 
-| Nama | NIM | Role |
-|------|-----|------|
-| M Dantha Arianvasya | 1237050106 | Project Manager |
-| Muhamad Khansa Khalifaturohman | 1247050115 | System Analyst |
-| Hasna Minatul Mardiah | 1237050024 | UI/UX Designer |
-| Idha Hamidaturrosadi | 1237050026 | UI/UX Designer |
-| Hilman Maulana | 1237050020 | Frontend Developer |
-| Irsyad Adfiansha Hidayat | 1237050042 | Frontend Developer |
-| Lutfi Nurhidayat | 1237050123 | Backend Developer |
-| Hafizultan Fanzaulid | 1237050097 | Backend Developer |
-| Firman Adi Nugraha | 1237050016 | Quality Assurance |
+Fitur hasil rebranding SmartLoket:
+
+- 🏛️ **Logo resmi Kementerian ATR/BPN 2026** dipakai sebagai identitas aplikasi (SVG, favicon, header, sidebar, dan halaman publik).
+- 🌗 **Toggle tema site-wide** (Light / Dark / System) tersedia di header aplikasi dan halaman Beranda — tidak lagi hanya di halaman Settings.
+- 🔐 **Settings = Manajemen Akun (khusus Admin)** — menu "Manajemen Akun" pindah dari sidebar admin ke menu **Settings** pada dropdown profil; halamannya kini berisi kelola akun petugas + pengaturan email pengirim (Profil Admin).
+- ✉️ **Pengirim email sistem = Profil Admin** yang dapat diubah dinamis tanpa menyentuh `.env` (email revisi pemohon dikirim dari email + sandi aplikasi akun admin).
+- 🧪 **Email pemohon tersedia di seluruh 10 tiket contoh** untuk uji alur notifikasi revisi.
 
 ---
 
-## 📋 Deskripsi Proyek
-
-**SALK (Sistem Antrian Loket Klinik)** adalah aplikasi web modern untuk mengelola antrian pasien di loket klinik/poliklinik secara digital. Sistem ini memungkinkan pasien mengambil nomor antrian secara mandiri, memantau status secara real-time, dan membantu petugas mengelola pelayanan dengan lebih efisien.
-
-Proyek ini dikembangkan sebagai bagian dari **Tugas Manajemen Proyek Perangkat Lunak** - Ujian Tengah Semester Ganjil Tahun Akademik 2025/2026.
-
----
-
-## ✨ Fitur Utama
-
-### 👥 Modul Pasien
-- 🎫 **Ambil Tiket Antrian** - Pasien dapat mengambil nomor antrian secara mandiri
-- ⏱️ **Estimasi Waktu Tunggu** - Menampilkan perkiraan waktu dilayani berdasarkan rata-rata pelayanan
-- 📺 **Display Real-Time** - Tampilan layar besar untuk menunjukkan antrian aktif
-- 🖨️ **Cetak Tiket** - Fitur cetak tiket dengan desain profesional
-
-### 👨‍💼 Modul Operator/Petugas
-- 📞 **Panel Operator** - Dashboard untuk memanggil dan mengelola antrian
-- 🔁 **Panggil Ulang** - Fitur untuk memanggil ulang pasien
-- ✅ **Selesai & Panggil Berikutnya** - Alur kerja yang efisien
-- 📊 **Statistik Harian** - Melihat jumlah pasien yang sudah dilayani
-
-### 🔧 Modul Admin (Filament Panel)
-- 👤 **Manajemen Pengguna** - Kelola akun admin dan petugas
-- 🏥 **Manajemen Layanan** - Atur poli/layanan dengan prefix tiket
-- 🖥️ **Manajemen Loket** - Konfigurasi counter pelayanan
-- 📈 **Laporan Aktivitas** - Statistik dan analisis pelayanan
-
----
-
-## 🛠️ Tech Stack
+## 🏗️ Tech Stack
 
 | Layer | Teknologi |
 |-------|-----------|
 | **Frontend** | React 19, TypeScript, Inertia.js 2, Tailwind CSS 4 |
 | **UI Components** | shadcn/ui, Radix UI, Lucide React |
 | **Backend** | Laravel 12, PHP 8.2+ |
-| **Admin Panel** | Filament 4 |
-| **Database** | SQLite (default), MySQL/PostgreSQL (production) |
-| **Build Tool** | Vite 7 |
-| **Design** | Figma |
+| **Database** | MySQL (default melalui Laragon), SQLite (pengujian) |
+| **Build Tool** | Vite (Laravel React Starter Kit) |
+| **Email** | SMTP (konfigurasi `.env` atau Profil Admin dinamis) |
 
 ---
 
-## 📸 Screenshots
+## 👥 Peran (RBAC 9)
 
-<div align="center">
-    <img src="./ScreenshotAplikasi/landing-page.png" alt="Landing Page" width="800"/>
-    <p>Landing Page</p>
-</div>
-
-<div align="center">
-     <div style="display: flex; justify-content: center; gap: 10px;">
-        <img src="./ScreenshotAplikasi/login.png" alt="Login Page" width="45%"/>
-        <img src="./ScreenshotAplikasi/register.png" alt="Register Page" width="45%"/>
-    </div>
-     <p>Login & Register</p>
-</div>
-
-<div align="center">
-    <img src="./ScreenshotAplikasi/dashboard-user.png" alt="Dashboard User" width="800"/>
-    <p>Dashboard User</p>
-</div>
-
-<div align="center">
-    <img src="./ScreenshotAplikasi/dashboard-admin.png" alt="Dashboard Admin" width="800"/>
-    <p>Dashboard Admin</p>
-</div>
+| Peran | Kode | Menu Utama |
+|-------|------|------------|
+| Admin | `admin` | Database Tiket, Arsip, Revisi, Form Pendaftaran, Settings (Manajemen Akun) |
+| Pemimpin | `pemimpin` | Monitoring, Laporan & Rekap |
+| Loket Penerimaan | `loket` | Loket Penerimaan |
+| Verifikator | `verifikator` | Verifikasi Berkas |
+| Warkah | `warkah` | Pencarian & Data Warkah |
+| Validator BT | `validator_btel` | Validasi Pra-BTel |
+| Validator SU | `validator_suel` | Validasi Pra-SuEl |
+| Alih Media BT | `alih_media_btel` | Alih Media Pra-BTel |
+| Alih Media SU | `alih_media_suel` | Alih Media Pra-SuEl |
 
 ---
 
-## 🚀 Instalasi
+## 🔄 Alur Layanan (V2.0 & 2026)
 
-### Prasyarat
-- PHP >= 8.2
-- Composer
-- Node.js >= 18
-- NPM atau Yarn
+```
+Loket Penerimaan
+   → Verifikasi Berkas
+   → Warkah (penelusuran data warkah + serah terima berkas ke validator)
+   → Validasi Pra-BTel ──┬── paralel
+   → Validasi Pra-SuEl ──┘
+   → Alih Media Pra-BTel ──┬── paralel
+   → Alih Media Pra-SuEl ──┘
+   → Sertifikat Elektronik terbit
+```
 
-### Langkah Instalasi
+Setiap tahap memakai pola **pull-based**: Smart Search → Add → Proses → Selesai → kembali ke Database Admin. Dokumen alur detail: [`docs/flow/alur-warkah.md`](docs/flow/alur-warkah.md).
+
+---
+
+## 🚀 Instalasi & Menjalankan
+
+> Lingkungan disarankan: **Laragon** (PHP 8.2+, MySQL, Composer, Node.js 20+).
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/[username]/salk.git
-cd salk
-
-# 2. Install dependencies PHP
+# 1. Dependensi
 composer install
-
-# 3. Install dependencies JavaScript
 npm install
 
-# 4. Copy environment file
+# 2. Konfigurasi environment
 cp .env.example .env
-
-# 5. Generate application key
 php artisan key:generate
+# → isi DB_USERNAME / DB_PASSWORD / DB_DATABASE (atau pakai SQLite: DB_CONNECTION=sqlite)
 
-# 6. Setup database (SQLite)
-touch database/database.sqlite
+# 3. Migrasi + seeder data contoh (users, tiket, master)
 php artisan migrate --seed
 
-# 7. Build assets
+# 4. Build aset frontend (pengembangan)
+npm run dev
+# atau untuk produksi:
 npm run build
 
-# 8. Jalankan server
+# 5. Jalankan server
 php artisan serve
 ```
 
-### Akses Aplikasi
+Login cepat (hasil `UserSeeder`):
 
-| URL | Deskripsi |
-|-----|-----------|
-| `http://localhost:8000` | Landing Page |
-| `http://localhost:8000/login` | Login User |
-| `http://localhost:8000/admin/login` | Login Admin |
-| `http://localhost:8000/queue/ticket` | Ambil Tiket Antrian |
-| `http://localhost:8000/queue/display` | Display Antrian |
-| `http://localhost:8000/queue/management` | Panel Operator |
-| `http://localhost:8000/admin` | Admin Panel (Filament) |
+| Username | Password | Peran |
+|----------|----------|-------|
+| `admin` | `admin123` | Admin |
+| `pemimpin` | `pemimpin123` | Pemimpin |
+| `loket1` | `loket123` | Loket |
+| `verifikator1` | `verif123` | Verifikator |
+| `warkah1` | `warkah123` | Warkah |
+| `vbtel1` / `vsuel1` | `vbtel123` / `vsuel123` | Validator |
+| `ambt1` / `amsu1` | `ambt123` / `amsu123` | Alih Media |
 
----
-
-
-
-## 📅 Timeline Proyek
-
-| Sprint | Fase | Durasi | Status |
-|--------|------|--------|--------|
-| - | Pembagian Tugas | 1 - 7 September 2025 | ✅ Selesai |
-| 1 | Perancangan & Desain | 8 - 28 September 2025 | ✅ Selesai |
-| 2 | Pengembangan Fitur Utama | 29 Sept - 26 Okt 2025 | ✅ Selesai |
-| 3 | Integrasi & Penyempurnaan | 27 Okt - 30 Nov 2025 | ✅ Selesai |
-| - | Testing | 1 - 14 Desember 2025 | ✅ Selesai |
-| - | Deploy & Evaluasi | 15 - 28 Desember 2025 | ⏳ Pending |
+Data tiket contoh dibuat oleh `SampleTiketSeeder` (10 tiket, semuanya berisi `email_pemohon` untuk uji notifikasi revisi). Email pemohon yang dipakai: `razky0823@gmail.com`, `agustus0852@gmail.com`, `razky8804st@gmail.com`, `kiritokun8804@gmail.com`, `jeckagus0823@gmail.com`, `jeckvartigo0823@gmail.com`, `awir4806@gmail.com`.
 
 ---
 
-## 📊 Arsitektur Sistem
+## ✉️ Pengaturan Email Pengirim (Profil Admin)
 
-```mermaid
-graph TB
-    subgraph Frontend
-        A[React + Inertia.js]
-        B[shadcn/ui Components]
-    end
-    
-    subgraph Backend
-        C[Laravel 12]
-        D[Filament Admin]
-    end
-    
-    subgraph Database
-        E[(SQLite/MySQL)]
-    end
-    
-    A --> C
-    B --> A
-    C --> D
-    C --> E
-    D --> E
+Email revisi berkas otomatis dikirim ke `email_pemohon` tiap kali berkas dikembalikan dari tahap mana pun.
+
+- **Pengirim default** mengikuti `.env` (`MAIL_FROM_ADDRESS`, `MAIL_USERNAME`, `MAIL_PASSWORD`).
+- **Pengirim dinamis (opsional)**: Admin membuka **Settings → Manajemen Akun → Pengaturan Email Pengirim (Profil Admin)**, mengisi email + Sandi Aplikasi. `RevisionEmailService` lalu memakai profil admin tersebut sebagai `from` & kredensial SMTP saat runtime, tanpa mengubah `.env`.
+- Kolom `sandi_aplikasi` tersimpan di tabel `users` dan **tidak pernah diserialisasi** ke frontend (`$hidden`).
+
+Dokumen alur lengkap: [`docs/flow/email-revisi-pemohon.md`](docs/flow/email-revisi-pemohon.md).
+
+---
+
+## 🧪 Pengujian
+
+```bash
+php artisan test                 # suite fitur (termasuk BerkasLengkapMilestoneTest)
+npm run build                    # validasi tipe + bundling frontend
+php -l app/Http/Controllers/*.php
 ```
 
-### Entitas Database
-- **Users** - Data pengguna (admin, petugas)
-- **Services** - Data layanan/poli
-- **Counters** - Data loket pelayanan
-- **Tickets** - Data tiket antrian
-- **Calls** - Riwayat pemanggilan
+---
+
+## 📁 Struktur Penting
+
+```
+app/
+├── Http/Controllers/AdminController.php   # DB admin, Manajemen Akun, settings.email
+├── Models/{User,Tiket,BidangTanah, …}     # model domain
+└── Services/RevisionEmailService.php      # pengirim email revisi (dinamis per profil admin)
+database/
+├── migrations/                            # skema (sandi_aplikasi, email_pemohon, …)
+└── seeders/                               # UserSeeder, SampleTiketSeeder, …
+resources/js/
+├── components/app-header.tsx              # header global + toggle tema
+├── components/app-sidebar.tsx             # navigasi per peran
+└── pages/                                 # halaman Inertia (admin, loket, tahap, …)
+public/images/logobpn2026.svg              # logo resmi (favicon/header/sidebar)
+docs/flow/                                 # dokumentasi alur layanan
+```
 
 ---
 
 ## 📄 Lisensi
 
-Proyek ini dikembangkan untuk keperluan akademis dan pembelajaran.
-
----
-
-## 🙏 Acknowledgments
-
-- **UIN Sunan Gunung Djati Bandung** - Fakultas Sains dan Teknologi
-- **Jurusan Teknik Informatika** - Mata Kuliah MPPL
-- **Agung Wahana, MT.** - Dosen Pengampu Mata Kuliah MPPL
-
----
-
-<div align="center">
-
-**SALK - Sistem Antrian Loket Klinik**
-
-*Cepat, Efisien, dan Modern*
-
-Made with ❤️ by Tim SALK - UIN Sunan Gunung Djati Bandung © 2025
-
-</div>
+Proyek internal Kantor Pertanahan Kota Bandar Lampung. Seluruh logo & identitas Kementerian ATR/BPN adalah aset kementerian.

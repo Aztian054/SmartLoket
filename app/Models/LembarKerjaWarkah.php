@@ -50,11 +50,30 @@ class LembarKerjaWarkah extends Model
         'dikembalikan' => 'Berkas Telah Dikembalikan',
     ];
 
+    /**
+     * Siklus status sertipikat BT/SU — single source of truth milestone Warkah:
+     *   belum → berkas_lengkap → diserahkan → dikembalikan
+     *  - belum          : data/dokumen BT/SU belum lengkap (default).
+     *  - berkas_lengkap : milestone eksplisit "Berkas Telah Lengkap (Warkah)".
+     *  - diserahkan     : berkas diserahkan ke Validator BT/SU (dipinjam).
+     *  - dikembalikan   : berkas dikembalikan ke Warkah setelah Alih Media selesai.
+     */
+    public const STATUS_SERTIPIKAT = [
+        'belum' => 'Belum',
+        'berkas_lengkap' => 'Berkas Telah Lengkap',
+        'diserahkan' => 'Diserahkan ke Validator',
+        'dikembalikan' => 'Dikembalikan ke Warkah',
+    ];
+
     /** Kondisi fisik berkas BT/SU saat serah terima / pengembalian. */
     public const KONDISI_BERKAS = [
         'lengkap' => 'Lengkap',
         'rusak' => 'Rusak',
         'kurang' => 'Kurang',
+    ];
+
+    protected $appends = [
+        'status_sertipikat_label',
     ];
 
     protected $casts = [
@@ -66,6 +85,14 @@ class LembarKerjaWarkah extends Model
         'gabungan' => 'boolean',
         'pengembalian_sementara' => 'boolean',
     ];
+
+    /** Label ramah tampilan status sertipikat (milestone Warkah). */
+    public function getStatusSertipikatLabelAttribute(): string
+    {
+        $st = $this->status_sertipikat ?? 'belum';
+
+        return self::STATUS_SERTIPIKAT[$st] ?? ucfirst((string) $st);
+    }
 
     public function tiket(): BelongsTo
     {

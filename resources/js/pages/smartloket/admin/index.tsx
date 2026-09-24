@@ -14,7 +14,7 @@ import { Database, PlusCircle, Search } from 'lucide-react';
 
 interface AdminIndexProps {
     tikets: Paginated<SmartTiket> & {
-        data: Array<SmartTiket & { monitor_warkah?: string | null; monitor_sertipikat?: string | null }>;
+        data: Array<SmartTiket & { monitor_warkah?: string | null; monitor_sertipikat?: string | null; monitor_sertipikat_label?: string | null }>;
     };
     stats: { total: number; menunggu: number; proses: number; selesai: number; dikembalikan: number; batal: number };
     jenisPermohonans: SmartJenisPermohonan[];
@@ -133,7 +133,7 @@ export default function AdminIndex({ tikets, stats, jenisPermohonans, jenisHaks,
                                             <StatusBadge badge={t.status_badge}>{t.status_label}</StatusBadge>
                                         </td>
                                         <td className="px-3 py-2 text-xs">{t.monitor_warkah ?? '-'}</td>
-                                        <td className="px-3 py-2 text-xs">{t.monitor_sertipikat ?? '-'}</td>
+                                        <td className="px-3 py-2 text-xs">{t.monitor_sertipikat_label ?? t.monitor_sertipikat ?? '-'}</td>
                                         <td className="px-3 py-2 text-xs">{t.tanggal_masuk ? new Date(t.tanggal_masuk).toLocaleDateString('id-ID') : '-'}</td>
                                         <td className="px-3 py-2 text-right">
                                             <Button size="sm" variant="outline" asChild>

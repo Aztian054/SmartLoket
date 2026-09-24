@@ -57,6 +57,9 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/users/{id}', [AdminController::class, 'usersUpdate'])->name('users.update');
         Route::post('/users/{id}/hapus', [AdminController::class, 'usersHapus'])->name('users.hapus');
 
+        // â”€â”€ Pengaturan email pengirim (Profil Admin) â”€â”€
+        Route::post('/settings/email', [AdminController::class, 'settingsEmailUpdate'])->name('settings.email');
+
         // â”€â”€ Kelola Form Pendaftaran (master konten form) â”€â”€
         Route::get('/form-pendaftaran', [FormPendaftaranController::class, 'index'])->name('form-pendaftaran');
 
@@ -132,6 +135,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{id}', [WarkahController::class, 'show'])->name('show');
         Route::get('/{id}/print-perbaikan', [WarkahController::class, 'printPerbaikan'])->name('print-perbaikan');
         Route::post('/{id}/simpan', [WarkahController::class, 'simpanProgres'])->name('simpan');
+        Route::post('/{id}/berkas-lengkap', [WarkahController::class, 'berkasLengkap'])->name('berkas-lengkap');
         Route::post('/{id}/kirim', [WarkahController::class, 'kirim'])->name('kirim');
         Route::post('/{id}/pengembalian', [WarkahController::class, 'catatPengembalian'])->name('pengembalian');
         Route::post('/{id}/selesai', [WarkahController::class, 'selesai'])->name('selesai');

@@ -49,7 +49,6 @@ function navForRole(role: string | undefined): NavItem[] {
                         { title: 'Arsip Berkas Selesai', href: '/admin/selesai' },
                         { title: 'Revisi Berkas', href: '/admin/revisi' },
                         { title: 'Arsip (Penataan)', href: '/admin/arsip' },
-                        { title: 'Manajemen Akun', href: '/admin/users' },
                         { title: 'Form Pendaftaran', href: '/admin/form-pendaftaran' },
                     ],
                 },

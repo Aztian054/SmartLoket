@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { type BreadcrumbItem, type SmartTiket } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
-import { ArrowRight, Database, History, Inbox, PlusCircle, RefreshCw, Search, UserCheck } from 'lucide-react';
+import { ArrowRight, Database, History, Inbox, Lock, PlusCircle, RefreshCw, Search, UserCheck } from 'lucide-react';
 
 interface StageStats {
     total_db: number;
@@ -28,6 +28,7 @@ interface SearchRow {
     jenis: string | null;
     tanggal_masuk: string | null;
     locked?: boolean;
+    lock_reason?: string | null;
     active?: { user_id: number } | null;
 }
 
@@ -291,9 +292,14 @@ export default function StageIndex({ stage, stageLabel, routeBase, stats, active
                                                                 Diproses akun lain
                                                             </Badge>
                                                         ) : t.locked ? (
-                                                            <Badge variant="secondary" className="normal-case">
-                                                                Terkunci
-                                                            </Badge>
+                                                            <div className="flex flex-col items-end gap-1">
+                                                                <Badge variant="secondary" className="normal-case">
+                                                                    <Lock className="mr-1 size-3" /> Terkunci
+                                                                </Badge>
+                                                                {t.lock_reason && (
+                                                                    <small className="max-w-[230px] text-right text-xs text-muted-foreground">{t.lock_reason}</small>
+                                                                )}
+                                                            </div>
                                                         ) : (
                                                             <Button size="sm" variant="outline" onClick={() => addTicket(t.id)}>
                                                                 <PlusCircle className="mr-1 size-4" /> Add

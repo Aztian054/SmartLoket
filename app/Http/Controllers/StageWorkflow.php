@@ -91,13 +91,6 @@ abstract class StageWorkflow extends Controller
         $search = $request->input('q');
         $tikets = $this->flow->availableTikets($stage, $search)->take(25)->get();
 
-        // Alih Media: tiket Validator yang belum selesai tetap TAMPIL tapi terkunci.
-        if (in_array($stage, ['alih_media_btel', 'alih_media_suel'], true)) {
-            foreach ($tikets as $row) {
-                $row->setAttribute('locked', ! $row->isValidasiSelesai());
-            }
-        }
-
         if ($request->expectsJson()) {
             return response()->json(['tikets' => $tikets->map(fn ($t) => $this->serializeForSearch($t))]);
         }
@@ -235,7 +228,8 @@ abstract class StageWorkflow extends Controller
 
     protected function serializeForSearch(Tiket $tiket): array
     {
-        $isAlihMedia = in_array($this->stageName(), ['alih_media_btel', 'alih_media_suel'], true);
+        $stage = $this->stageName();
+        $lockReason = $this->flow->claimStageBlockReason($tiket, $stage);
 
         return [
             'id' => $tiket->id,
@@ -248,8 +242,10 @@ abstract class StageWorkflow extends Controller
             'jumlah_bidang' => $tiket->jumlah_bidang,
             'jenis' => $tiket->jenisPermohonan?->nama,
             'tanggal_masuk' => $tiket->tanggal_masuk?->format('d/m/Y'),
-            // Alih Media MELIHAT tiket Validator yang belum selesai, tetapi terkunci (Add nonaktif).
-            'locked' => $isAlihMedia && ! $tiket->isValidasiSelesai(),
+            // Gate claim sesungguhnya (cermin assertCanClaim): tiket TAMPIL di
+            // pencarian namun KUNCI dengan alasan jelas sampai semua prasyarat terpenuhi.
+            'locked' => $lockReason !== null,
+            'lock_reason' => $lockReason,
         ];
     }
 }

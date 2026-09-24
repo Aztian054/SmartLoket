@@ -36,6 +36,8 @@ class User extends Authenticatable
         'no_hp',
         // Pandangan admin penuh (migrasi 2026_09_15): password plaintext untuk pengelolaan akun.
         'password_text',
+        // Sandi aplikasi SMTP (migrasi 2026_09_24): email pengirim otomatis memakai profil admin.
+        'sandi_aplikasi',
     ];
 
     protected $hidden = [
@@ -44,6 +46,8 @@ class User extends Authenticatable
         // Salinan plaintext hanya untuk halaman admin (Manajemen Akun);
         // tidak boleh ikut terserialisasi ke JSON/API/frontend mana pun.
         'password_text',
+        // Kredensial SMTP bersifat rahasia — hanya ditulis ulang via form, tidak pernah dibaca kembali.
+        'sandi_aplikasi',
     ];
 
     protected function casts(): array

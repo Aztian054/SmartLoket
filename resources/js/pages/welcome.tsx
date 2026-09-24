@@ -12,6 +12,7 @@ import {
     ShieldCheck,
     Layers,
 } from 'lucide-react';
+import AppearanceToggleDropdown from '@/components/appearance-dropdown';
 
 export default function Welcome() {
     const { auth } = usePage<SharedData>().props;
@@ -36,13 +37,14 @@ export default function Welcome() {
             <header className="border-b">
                 <div className="flex items-center justify-between px-6 py-4">
                     <div className="flex items-center gap-3">
-                        <img src="/images/logobpn2026.png" alt="Logo Kementerian ATR/BPN" className="h-10 w-10 rounded-full bg-white p-1 shadow"/>
+                        <img src="/images/logobpn2026.svg" alt="Logo Kementerian ATR/BPN" className="h-10 w-10 rounded-full bg-white p-1 shadow"/>
                         <div>
                             <p className="font-bold leading-none">SmartLoket</p>
                             <p className="text-xs text-muted-foreground">Sistem Loket Pelayanan Pertanahan Elektronik</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
+                        <AppearanceToggleDropdown />
                         <Link href="/tracking">
                             <span className="rounded-full border px-4 py-1.5 text-sm hover:bg-muted">Tracking Publik</span>
                         </Link>
@@ -61,7 +63,7 @@ export default function Welcome() {
 
             <section className="bg-gradient-to-br from-[#0b2239] via-[#123459] to-[#163e66] px-6 py-16 text-white">
                 <div className="mx-auto max-w-3xl text-center">
-                    <img src="/images/logobpn2026.png" alt="Logo Kementerian ATR/BPN" className="mx-auto mb-4 h-20 w-20 rounded-full bg-white p-1 object-contain shadow-lg" />
+                    <img src="/images/logobpn2026.svg" alt="Logo Kementerian ATR/BPN" className="mx-auto mb-4 h-20 w-20 rounded-full bg-white p-1 object-contain shadow-lg" />
                     <h1 className="text-4xl font-bold tracking-tight">SmartLoket</h1>
                     <p className="mt-2 font-medium text-white/90">Kantor Pertanahan Kota Bandar Lampung</p>
                     <p className="mx-auto mt-4 max-w-xl text-white/70">

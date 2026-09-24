@@ -3,7 +3,7 @@ export default function AppLogo() {
         <>
             <div className="flex aspect-square size-8 items-center justify-center overflow-hidden rounded-xl border border-sidebar-border/60 bg-white shadow-sm">
                 <img
-                    src="/images/logobpn2026.png"
+                    src="/images/logobpn2026.svg"
                     alt="Logo Kementerian ATR/BPN"
                     className="size-full object-contain"
                 />

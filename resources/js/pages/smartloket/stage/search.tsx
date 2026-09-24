@@ -2,6 +2,7 @@ import AppLayout from '@/layouts/app-layout';
 import { StatusBadge } from '@/components/smartloket/status-badge';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Lock } from 'lucide-react';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 
@@ -15,12 +16,12 @@ interface SearchRow {
     jenis: string | null;
     tanggal_masuk: string | null;
     locked?: boolean;
+    lock_reason?: string | null;
 }
 
-export default function StageSearch({ tikets, search, stage, stageLabel, routeBase }: {
+export default function StageSearch({ tikets, search, stageLabel, routeBase }: {
     tikets: SearchRow[];
     search: string | null;
-    stage: string;
     stageLabel: string;
     routeBase: string;
 }) {
@@ -65,7 +66,14 @@ export default function StageSearch({ tikets, search, stage, stageLabel, routeBa
                                     </td>
                                     <td className="px-3 py-2 text-right">
                                         {t.locked ? (
-                                            <Badge variant="secondary">Terkunci</Badge>
+                                            <div className="flex flex-col items-end gap-1">
+                                                <Badge variant="secondary" className="normal-case">
+                                                    <Lock className="mr-1 size-3" /> Terkunci
+                                                </Badge>
+                                                {t.lock_reason && (
+                                                    <small className="max-w-[230px] text-right text-xs text-muted-foreground">{t.lock_reason}</small>
+                                                )}
+                                            </div>
                                         ) : (
                                             <Button size="sm" variant="outline" asChild>
                                                 <a href={`/${routeBase}/${t.id}`}>Detail</a>

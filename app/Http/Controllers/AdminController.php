@@ -65,10 +65,11 @@ class AdminController extends Controller
             'batal' => Tiket::where('status', 'batal')->count(),
         ];
 
-        // Nama penanggung jawab tahap Warkah + status sertipikat untuk setiap tiket (monitoring Final-Rizki).
+        // Nama penanggung jawab tahap Warkah + status sertipikat (milestone) untuk setiap tiket (monitoring Final-Rizki).
         foreach ($tikets as $tp) {
             $tp['monitor_warkah'] = $tp->penugasans->where('stage', 'warkah')->last()?->user?->name;
             $tp['monitor_sertipikat'] = $tp->lembarKerjaWarkahs->last()?->status_sertipikat;
+            $tp['monitor_sertipikat_label'] = $tp->lembarKerjaWarkahs->last()?->status_sertipikat_label;
         }
 
         $jenisPermohonans = JenisPermohonan::where('is_active', true)->with('persyaratanDokumens')->get();
@@ -566,5 +567,40 @@ class AdminController extends Controller
         $user->update(['is_active' => ! $user->is_active]);
 
         return back()->with('success', "Status akun {$user->name} diperbarui.");
+    }
+
+    /**
+     * Pengaturan Email Pengirim (Profil Admin) — halaman Settings (Manajemen Akun).
+     *
+     * Admin yang sedang login menjadi pengirim otomatis email revisi (SMTP) ke pemohon.
+     * Sandi aplikasi dikosongkan = tetap memakai nilai lama / konfigurasi .env.
+     */
+    public function settingsEmailUpdate(Request $request)
+    {
+        $admin = Auth::user();
+
+        if (! $admin instanceof User || $admin->role !== 'admin') {
+            abort(403, 'Hanya akun admin yang dapat mengubah pengaturan email pengirim.');
+        }
+
+        $request->validate([
+            'no_hp' => 'nullable|string|max:20',
+            'email' => 'required|email|unique:users,email,'.$admin->id,
+            'sandi_aplikasi' => 'nullable|string|max:255',
+        ]);
+
+        $data = [
+            'no_hp' => $request->input('no_hp'),
+            'email' => $request->input('email'),
+        ];
+
+        // Sandi aplikasi hanya diperbarui bila diisi ulang (kosong = tetap nilai lama).
+        if ($request->filled('sandi_aplikasi')) {
+            $data['sandi_aplikasi'] = $request->input('sandi_aplikasi');
+        }
+
+        $admin->update($data);
+
+        return back()->with('success', 'Pengaturan email pengirim (profil admin) berhasil disimpan.');
     }
 }

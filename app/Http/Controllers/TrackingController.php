@@ -13,12 +13,12 @@ class TrackingController extends Controller
     {
         $tiket = null;
         if ($request->filled('q')) {
-            $tiket = Tiket::with(['jenisPermohonan', 'bidangTanahs', 'penugasans.user', 'riwayatStatuses'])
+            $tiket = Tiket::with(['jenisPermohonan', 'bidangTanahs', 'penugasans.user', 'riwayatStatuses', 'lembarKerjaWarkahs'])
                 ->where('kode_tiket', 'like', "%{$request->q}%")
                 ->first();
 
             if (! $tiket) {
-                $tiket = Tiket::with(['jenisPermohonan', 'bidangTanahs', 'penugasans.user', 'riwayatStatuses'])
+                $tiket = Tiket::with(['jenisPermohonan', 'bidangTanahs', 'penugasans.user', 'riwayatStatuses', 'lembarKerjaWarkahs'])
                     ->where('nomor_telepon', 'like', "%{$request->q}%")
                     ->first();
             }
@@ -34,6 +34,7 @@ class TrackingController extends Controller
             'bidangTanahs',
             'penugasans.user',
             'riwayatStatuses',
+            'lembarKerjaWarkahs',
         ])->where('kode_tiket', $kode)->firstOrFail();
 
         return Inertia::render('smartloket/tracking/show', ['tiket' => $tiket]);
