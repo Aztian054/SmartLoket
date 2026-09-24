@@ -20,7 +20,7 @@ use Inertia\Inertia;
 |--------------------------------------------------------------------------
 | Web Routes â€” SmartLoket
 |--------------------------------------------------------------------------
-| Modul antrian klinik (React/Inertia) + Modul loket pertanahan SmartLoket
+| Aplikasi SmartLoket (React/Inertia) — Loket Pelayanan Pertanahan.
 | (9 peran: admin, pemimpin, loket, verifikator, warkah, validator_btel,
 |  validator_suel, alih_media_btel, alih_media_suel).
 | Pola pull-based: Smart Search â†’ Add â†’ Proses â†’ Selesai â†’ Kembali ke DB Admin.

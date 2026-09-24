@@ -2,7 +2,7 @@ import AppLogoIcon from '@/components/app-logo-icon';
 import { home } from '@/routes';
 import { Link } from '@inertiajs/react';
 import { type PropsWithChildren } from 'react';
-import { Heart, Sparkles } from 'lucide-react';
+import { Landmark, Sparkles } from 'lucide-react';
 
 interface AuthLayoutProps {
     name?: string;
@@ -22,7 +22,7 @@ export default function AuthSimpleLayout({ children, title, description, variant
                     {/* Logo */}
                     <Link href={home()} className="flex items-center justify-center gap-3 mb-8">
                         <div className={`w-12 h-12 ${isAdmin ? 'bg-gradient-to-br from-slate-700 to-slate-900' : 'bg-gradient-to-br from-teal-500 to-emerald-600'} rounded-xl flex items-center justify-center shadow-lg ${isAdmin ? 'shadow-slate-500/25' : 'shadow-teal-500/25'}`}>
-                            <Heart className="w-6 h-6 text-white" />
+                            <Landmark className="w-6 h-6 text-white" />
                         </div>
                         <div>
                             <span className="text-xl font-bold text-slate-900 dark:text-white">Smart</span>
@@ -63,16 +63,16 @@ export default function AuthSimpleLayout({ children, title, description, variant
                 <div className="relative z-10 text-center text-white max-w-md">
                     <div className={`inline-flex items-center gap-2 px-4 py-2 ${isAdmin ? 'bg-slate-700/50' : 'bg-white/20'} rounded-full backdrop-blur-sm mb-8`}>
                         <Sparkles className="w-4 h-4" />
-                        <span className="text-sm font-medium">{isAdmin ? 'Panel Administrator' : 'Sistem Antrian Modern'}</span>
+                        <span className="text-sm font-medium">{isAdmin ? 'Panel Administrator' : 'Layanan Pertanahan Digital'}</span>
                     </div>
 
                     <h2 className="text-4xl font-bold mb-4">
-                        {isAdmin ? 'Kelola Antrian dengan Mudah' : 'Selamat Datang'}
+                        {isAdmin ? 'Kelola Seluruh Layanan Loket' : 'Selamat Datang'}
                     </h2>
                     <p className={`text-lg ${isAdmin ? 'text-slate-300' : 'text-teal-100'} leading-relaxed`}>
                         {isAdmin
-                            ? 'Akses dashboard admin untuk mengelola layanan, loket, dan sistem antrian klinik Anda.'
-                            : 'Sistem antrian digital modern untuk pengalaman pelayanan kesehatan yang lebih baik dan efisien.'
+                            ? 'Akses dashboard admin untuk mengelola layanan, loket, dan seluruh alur warkah pertanahan.'
+                            : 'Platform loket pelayanan pertanahan digital untuk layanan yang lebih cepat, transparan, dan efisien.'
                         }
                     </p>
 

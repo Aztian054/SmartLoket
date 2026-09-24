@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { home } from '@/routes';
 import { Form, Head, Link } from '@inertiajs/react';
-import { LoaderCircle, Mail, Lock, LogIn, Heart, Shield, Sparkles, ArrowLeft } from 'lucide-react';
+import { LoaderCircle, Mail, Lock, LogIn, Landmark, Shield, Sparkles, ArrowLeft } from 'lucide-react';
 
 interface AdminLoginProps {
     status?: string;
@@ -34,7 +34,7 @@ export default function AdminLogin({ status, canResetPassword }: AdminLoginProps
                         {/* Logo */}
                         <div className="flex items-center gap-3 mb-8">
                             <div className="w-12 h-12 bg-gradient-to-br from-slate-700 to-slate-900 rounded-xl flex items-center justify-center shadow-lg shadow-slate-500/25">
-                                <Heart className="w-6 h-6 text-white" />
+                                <Landmark className="w-6 h-6 text-white" />
                             </div>
                             <div>
                                 <span className="text-xl font-bold text-slate-900 dark:text-white">Smart</span>
@@ -189,17 +189,17 @@ export default function AdminLogin({ status, canResetPassword }: AdminLoginProps
                         </div>
 
                         <h2 className="text-4xl font-bold mb-4">
-                            Kelola Antrian dengan Mudah
+                            Kelola Seluruh Layanan Loket
                         </h2>
                         <p className="text-lg text-slate-300 leading-relaxed">
-                            Akses dashboard admin untuk mengelola layanan, loket, dan sistem antrian klinik Anda.
+                            Akses dashboard admin untuk mengelola layanan, loket, dan seluruh alur warkah pertanahan.
                         </p>
 
                         {/* Feature Icons */}
                         <div className="mt-12 grid grid-cols-3 gap-6">
                             {[
                                 { icon: '👥', label: 'Kelola User' },
-                                { icon: '🏥', label: 'Layanan' },
+                                { icon: '🏛️', label: 'Layanan' },
                                 { icon: '📊', label: 'Statistik' },
                             ].map((item, idx) => (
                                 <div key={idx} className="p-4 bg-slate-800/50 rounded-xl backdrop-blur-sm">

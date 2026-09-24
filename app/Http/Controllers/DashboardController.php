@@ -12,7 +12,7 @@ class DashboardController extends Controller
 {
     /**
      * Dashboard per-peran (SmartLoket). Data dihitung server-side dan
-     * dirender sebagai halaman React/Inertia — tanpa polling klinik.
+     * dirender sebagai halaman React/Inertia (pull-based, tanpa polling realtime).
      */
     public function index(): Response
     {
